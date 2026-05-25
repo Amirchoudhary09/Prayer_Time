@@ -1433,6 +1433,16 @@
             if (e.target === dom.settingsModal) closeSettingsModal();
         });
 
+        // Notify Select All logic
+        if ($('notifySelectAllBtn')) {
+            $('notifySelectAllBtn').addEventListener('click', () => {
+                const checkboxes = dom.settingsModal.querySelectorAll('.setting-checkbox');
+                let allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                checkboxes.forEach(cb => cb.checked = !allChecked);
+                $('notifySelectAllBtn').textContent = !allChecked ? 'Disable All' : 'Enable All';
+            });
+        }
+
         // Date prayer modal close
         $('closeDateModalBtn').addEventListener('click', closeDateModal);
         dom.datePrayerModal.addEventListener('click', (e) => {
