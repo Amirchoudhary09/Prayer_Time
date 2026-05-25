@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Beautiful Muslim Prayer Times App - Get accurate Salah timings based on your location with Qibla direction, Hijri calendar, and countdown timer.">
+    <meta name="theme-color" content="#2c6c5a">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
     <title>🕌 Prayer Times - Salah Timings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -518,6 +522,16 @@
     </div>
 
     <audio id="notificationAudio" preload="auto"></audio>
+    <script>
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('ServiceWorker registered with scope:', reg.scope))
+                    .catch((err) => console.log('ServiceWorker registration failed:', err));
+            });
+        }
+    </script>
     <script src="app.js"></script>
 </body>
 </html>

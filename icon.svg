@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="#0d1117"/>
+  <rect width="512" height="512" rx="128" fill="url(#grad)"/>
+  
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2c6c5a" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0a1a15" stop-opacity="0.8" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Glowing Crescent -->
+  <path d="M296,112 C210.647,112 140.23,178.683 134.582,262.825 C149.69,240.26 175.766,225.5 204.5,225.5 C256.69,225.5 299,267.81 299,320 C299,343.344 290.523,364.717 276.516,381.166 C282.909,382.04 289.412,382.5 296,382.5 C370.558,382.5 431,322.058 431,247.5 C431,172.942 370.558,112 296,112 Z" fill="#D4AF37" filter="url(#glow)"/>
+  
+  <!-- Star -->
+  <polygon points="175.5,172.5 187,196 213,200 194.5,218.5 198.5,244.5 175.5,232.5 152.5,244.5 156.5,218.5 138,200 164,196" fill="#D4AF37" filter="url(#glow)"/>
+</svg>
