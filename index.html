@@ -187,19 +187,19 @@
             
             <!-- Secondary Times (Tahajjud, Imsak, Ishraq) -->
             <div class="secondary-times-container glass-card" style="margin-top: 15px; padding: 15px; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 10px;">
-                <div class="sec-time-item">
+                <div class="sec-time-item" data-sec="imsak">
                     <div class="sec-time-label" data-i18n="imsakTime">Imsak (Sehri)</div>
                     <div class="sec-time-val" id="time-imsak">--:--</div>
                 </div>
-                <div class="sec-time-item">
+                <div class="sec-time-item" data-sec="ishraq">
                     <div class="sec-time-label" data-i18n="ishraqTime">Ishraq</div>
                     <div class="sec-time-val" id="time-ishraq">--:--</div>
                 </div>
-                <div class="sec-time-item">
+                <div class="sec-time-item" data-sec="zawal">
                     <div class="sec-time-label" data-i18n="zawalTime">Zawaal</div>
                     <div class="sec-time-val" id="time-zawal">--:--</div>
                 </div>
-                <div class="sec-time-item">
+                <div class="sec-time-item" data-sec="tahajjud">
                     <div class="sec-time-label" data-i18n="tahajjudTime">Tahajjud</div>
                     <div class="sec-time-val" id="time-tahajjud">--:--</div>
                 </div>
@@ -471,7 +471,19 @@
                         
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyImsak" class="setting-checkbox"> Imsak
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
                                 <input type="checkbox" id="notifyFajr" class="setting-checkbox"> Fajr
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifySunrise" class="setting-checkbox"> Sunrise
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyIshraq" class="setting-checkbox"> Ishraq
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyZawal" class="setting-checkbox"> Zawaal
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
                                 <input type="checkbox" id="notifyDhuhr" class="setting-checkbox"> Dhuhr
@@ -484,6 +496,9 @@
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
                                 <input type="checkbox" id="notifyIsha" class="setting-checkbox"> Isha
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyTahajjud" class="setting-checkbox"> Tahajjud
                             </label>
                         </div>
                         

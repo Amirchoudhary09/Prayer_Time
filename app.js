@@ -44,7 +44,11 @@
         dhuhr:   { en: 'Dhuhr',   ar: 'الظهر', hi: 'ज़ुहर', fr: 'Dhuhr', ur: 'ظہر', bn: 'যোহর', id: 'Zuhur', tr: 'Öğle' },
         asr:     { en: 'Asr',     ar: 'العصر', hi: 'अस्र', fr: 'Asr', ur: 'عصر', bn: 'আসর', id: 'Asar', tr: 'İkindi' },
         maghrib: { en: 'Maghrib', ar: 'المغرب', hi: 'मग़रिब', fr: 'Maghrib', ur: 'مغرب', bn: 'মাগরিব', id: 'Maghrib', tr: 'Akşam' },
-        isha:    { en: 'Isha',    ar: 'العشاء', hi: 'ईशा', fr: 'Isha', ur: 'عشاء', bn: 'এশা', id: 'Isya', tr: 'Yatsı' }
+        isha:    { en: 'Isha',    ar: 'العشاء', hi: 'ईशा', fr: 'Isha', ur: 'عشاء', bn: 'এশা', id: 'Isya', tr: 'Yatsı' },
+        imsak:   { en: 'Imsak',   ar: 'الإمساك', hi: 'इमसाक' },
+        ishraq:  { en: 'Ishraq',  ar: 'الإشراق', hi: 'इशराक़' },
+        zawal:   { en: 'Zawaal',  ar: 'الزوال', hi: 'ज़वाल' },
+        tahajjud:{ en: 'Tahajjud',ar: 'التهجد', hi: 'तहज्जुद' }
     };
 
     const PRAYER_ORDER = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -222,9 +226,9 @@
         // Other
         countdownInterval: null,
         qiblaAngle: 0,
-        notifyPrefs: JSON.parse(localStorage.getItem('pt_notify_prefs') || '{"fajr":true,"dhuhr":true,"asr":true,"maghrib":true,"isha":true}'),
+        notifyPrefs: JSON.parse(localStorage.getItem('pt_notify_prefs') || '{"imsak":false,"fajr":true,"sunrise":false,"ishraq":false,"zawal":false,"dhuhr":true,"asr":true,"maghrib":true,"isha":true,"tahajjud":false}'),
         notifySound: localStorage.getItem('pt_notify_sound') || 'system',
-        jamaatTimes: JSON.parse(localStorage.getItem('pt_jamaat_times') || '{"fajr":"","dhuhr":"","asr":"","maghrib":"","isha":""}'),
+        jamaatTimes: JSON.parse(localStorage.getItem('pt_jamaat_times') || '{"imsak":"","fajr":"","sunrise":"","ishraq":"","zawal":"","dhuhr":"","asr":"","maghrib":"","isha":"","tahajjud":""}'),
         notifiedPrayers: {}, // track which prayers we already notified today
         
         // New Features State
@@ -757,19 +761,45 @@
         let [sh, sm] = state.todayTimings.Sunrise.split(' ')[0].split(':').map(Number);
         let ishraqDate = new Date();
         ishraqDate.setHours(sh, sm + state.ishraqOffset, 0, 0);
-        let ishH = String(ishraqDate.getHours()).padStart(2, '0');
-        let ishM = String(ishraqDate.getMinutes()).padStart(2, '0');
-        if ($('time-ishraq')) $('time-ishraq').textContent = formatTime(`${ishH}:${ishM}`);
+        let ishraqTime = state.jamaatTimes.ishraq;
+        if (!ishraqTime) {
+            let ishH = String(ishraqDate.getHours()).padStart(2, '0');
+            let ishM = String(ishraqDate.getMinutes()).padStart(2, '0');
+            ishraqTime = `${ishH}:${ishM}`;
+        } else {
+            let [h, m] = ishraqTime.split(':').map(Number);
+            ishraqDate.setHours(h, m, 0, 0);
+        }
+        if ($('time-ishraq')) $('time-ishraq').textContent = formatTime(ishraqTime);
         parsedTimes['ishraq'] = ishraqDate; // save for makrooh check
         
         // Zawaal (Dhuhr - X mins)
         let [dh, dm] = state.todayTimings.Dhuhr.split(' ')[0].split(':').map(Number);
         let zawalDate = new Date();
         zawalDate.setHours(dh, dm - state.makroohOffset, 0, 0);
-        let zh = String(zawalDate.getHours()).padStart(2, '0');
-        let zm = String(zawalDate.getMinutes()).padStart(2, '0');
-        if ($('time-zawal')) $('time-zawal').textContent = formatTime(`${zh}:${zm}`);
+        let zawalTime = state.jamaatTimes.zawal;
+        if (!zawalTime) {
+            let zh = String(zawalDate.getHours()).padStart(2, '0');
+            let zm = String(zawalDate.getMinutes()).padStart(2, '0');
+            zawalTime = `${zh}:${zm}`;
+        } else {
+            let [h, m] = zawalTime.split(':').map(Number);
+            zawalDate.setHours(h, m, 0, 0);
+        }
+        if ($('time-zawal')) $('time-zawal').textContent = formatTime(zawalTime);
         parsedTimes['zawal'] = zawalDate;
+
+        // Also add manual overrides to parsedTimes for notifications (except Sunrise which is already parsed in PRAYER_ORDER loop)
+        if (state.jamaatTimes.imsak) {
+            let d = new Date(); let [h, m] = state.jamaatTimes.imsak.split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['imsak'] = d;
+        } else {
+            let d = new Date(); let [h, m] = state.todayTimings.Imsak.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['imsak'] = d;
+        }
+        if (state.jamaatTimes.tahajjud) {
+            let d = new Date(); let [h, m] = state.jamaatTimes.tahajjud.split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['tahajjud'] = d;
+        } else {
+            let d = new Date(); let [h, m] = state.todayTimings.Lastthird.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['tahajjud'] = d;
+        }
 
         state._nextPrayer = nextPrayer;
         state._parsedTimes = parsedTimes;
@@ -821,7 +851,8 @@
 
     // ─── Notifications ───
     function checkNotification(now) {
-        PRAYER_ORDER.forEach(key => {
+        const ALL_NOTIF_KEYS = [...PRAYER_ORDER, 'imsak', 'ishraq', 'zawal', 'tahajjud'];
+        ALL_NOTIF_KEYS.forEach(key => {
             const targetTime = state._parsedTimes[key];
             if (!targetTime) return;
             
@@ -833,9 +864,10 @@
                 if (state.notifyPrefs[key]) {
                     state.notifiedPrayers[notifKey] = true;
                     
-                    let title = `It's time for ${PRAYER_NAMES[key].en} Prayer`;
-                    if (state.jamaatTimes[key]) {
-                        title = `It's time for ${PRAYER_NAMES[key].en} Jamaat`;
+                    let nameObj = PRAYER_NAMES[key] || { en: key };
+                    let title = `It's time for ${nameObj.en}`;
+                    if (state.jamaatTimes[key] && !['imsak', 'sunrise', 'ishraq', 'zawal', 'tahajjud'].includes(key)) {
+                        title = `It's time for ${nameObj.en} Jamaat`;
                     }
                     
                     if (Notification.permission === 'granted') {
@@ -1266,12 +1298,16 @@
         if ($('hijriAdjustment')) $('hijriAdjustment').value = state.hijriOffset.toString();
         if ($('ishraqOffset')) $('ishraqOffset').value = state.ishraqOffset.toString();
         if ($('makroohOffset')) $('makroohOffset').value = state.makroohOffset.toString();
-        
+        $('notifyImsak').checked = state.notifyPrefs.imsak;
         $('notifyFajr').checked = state.notifyPrefs.fajr;
+        $('notifySunrise').checked = state.notifyPrefs.sunrise;
+        $('notifyIshraq').checked = state.notifyPrefs.ishraq;
+        $('notifyZawal').checked = state.notifyPrefs.zawal;
         $('notifyDhuhr').checked = state.notifyPrefs.dhuhr;
         $('notifyAsr').checked = state.notifyPrefs.asr;
         $('notifyMaghrib').checked = state.notifyPrefs.maghrib;
         $('notifyIsha').checked = state.notifyPrefs.isha;
+        $('notifyTahajjud').checked = state.notifyPrefs.tahajjud;
         $('notifySound').value = state.notifySound;
         
         dom.offsetFajr.value = state.jamaatTimes.fajr || '';
@@ -1285,13 +1321,17 @@
         state.method = parseInt(dom.calcMethod.value);
         state.school = parseInt(dom.schoolSelect.value);
         state.use24h = dom.timeFormat24.checked;
-        
         state.notifyPrefs = {
+            imsak: $('notifyImsak').checked,
             fajr: $('notifyFajr').checked,
+            sunrise: $('notifySunrise').checked,
+            ishraq: $('notifyIshraq').checked,
+            zawal: $('notifyZawal').checked,
             dhuhr: $('notifyDhuhr').checked,
             asr: $('notifyAsr').checked,
             maghrib: $('notifyMaghrib').checked,
-            isha: $('notifyIsha').checked
+            isha: $('notifyIsha').checked,
+            tahajjud: $('notifyTahajjud').checked
         };
         state.notifySound = $('notifySound').value;
         
@@ -1300,13 +1340,13 @@
             Notification.requestPermission();
         }
 
-        state.jamaatTimes = {
-            fajr: dom.offsetFajr.value || "",
-            dhuhr: dom.offsetDhuhr.value || "",
-            asr: dom.offsetAsr.value || "",
-            maghrib: dom.offsetMaghrib.value || "",
-            isha: dom.offsetIsha.value || ""
-        };
+        // We use state.jamaatTimes which is managed inline for Imsak/Sunrise/etc.
+        // We only overwrite the ones managed in the settings quick modal.
+        state.jamaatTimes.fajr = dom.offsetFajr.value || state.jamaatTimes.fajr || "";
+        state.jamaatTimes.dhuhr = dom.offsetDhuhr.value || state.jamaatTimes.dhuhr || "";
+        state.jamaatTimes.asr = dom.offsetAsr.value || state.jamaatTimes.asr || "";
+        state.jamaatTimes.maghrib = dom.offsetMaghrib.value || state.jamaatTimes.maghrib || "";
+        state.jamaatTimes.isha = dom.offsetIsha.value || state.jamaatTimes.isha || "";
 
         localStorage.setItem('pt_method', state.method);
         localStorage.setItem('pt_school', state.school);
@@ -1435,14 +1475,16 @@
         });
         
         // Inline Edit Time Modal Logic
-        document.querySelectorAll('.prayer-card').forEach(card => {
-            card.style.cursor = 'pointer';
-            card.title = 'Click to edit Jamaat time';
-            card.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const prayerKey = card.getAttribute('data-prayer');
-                if (prayerKey) openEditTimeModal(prayerKey);
-            });
+        document.querySelectorAll('.prayer-card, .sec-time-item').forEach(card => {
+            const prayerKey = card.getAttribute('data-prayer') || (card.id === 'card-sunrise' ? 'sunrise' : null) || card.getAttribute('data-sec');
+            if (prayerKey) {
+                card.style.cursor = 'pointer';
+                card.title = 'Click to edit time';
+                card.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openEditTimeModal(prayerKey);
+                });
+            }
         });
 
         $('closeEditTimeBtn').addEventListener('click', closeEditTimeModal);
