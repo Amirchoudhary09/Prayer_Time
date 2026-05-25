@@ -251,53 +251,9 @@
         { ar: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ', en: '"O Changer of the hearts, make my heart firm upon Your religion."', ref: 'Jami` at-Tirmidhi 2140' }
     ];
 
-    // ─── DOM Refs ───
+    // ─── DOM Refs (initialized inside init() after DOM is ready) ───
     const $ = (id) => document.getElementById(id);
-    const dom = {
-        bgGradient: $('bgGradient'),
-        stars: $('stars'),
-        cityName: $('cityName'),
-        hijriDate: $('hijriDate'),
-        gregorianDate: $('gregorianDate'),
-        currentPrayerLabel: $('currentPrayerLabel'),
-        prayerArabic: $('prayerArabic'),
-        prayerEnglish: $('prayerEnglish'),
-        hoursValue: $('hoursValue'),
-        minutesValue: $('minutesValue'),
-        secondsValue: $('secondsValue'),
-        prayerTimeDisplay: $('prayerTimeDisplay'),
-        compassNeedle: $('compassNeedle'),
-        qiblaDegrees: $('qiblaDegrees'),
-        // Calendar Modal
-        calendarModal: $('calendarModal'),
-        calModalTitle: $('calModalTitle'),
-        calLangToggle: $('calLangToggle'),
-        calLangText: $('calLangText'),
-        calMonthName: $('calMonthName'),
-        calYear: $('calYear'),
-        calWeekdays: $('calWeekdays'),
-        calDays: $('calDays'),
-        calHint: $('calHint'),
-        // Date Prayer Modal
-        datePrayerModal: $('datePrayerModal'),
-        dateModalTitle: $('dateModalTitle'),
-        dateModalSubtitle: $('dateModalSubtitle'),
-        dpHijriValue: $('dpHijriValue'),
-        // Settings
-        settingsModal: $('settingsModal'),
-        calcMethod: $('calcMethod'),
-        schoolSelect: $('schoolSelect'),
-        manualCity: $('manualCity'),
-        timeFormat24: $('timeFormat24'),
-        enableNotifications: $('enableNotifications'),
-        offsetFajr: $('offsetFajr'),
-        offsetDhuhr: $('offsetDhuhr'),
-        offsetAsr: $('offsetAsr'),
-        offsetMaghrib: $('offsetMaghrib'),
-        offsetIsha: $('offsetIsha'),
-        toast: $('toast'),
-        toastMessage: $('toastMessage')
-    };
+    let dom = {};
 
     // ─── Language Modal Logic ───
     function initLangModal() {
@@ -350,6 +306,48 @@
 
     // ─── Initialize ───
     async function init() {
+        // Initialize DOM refs here — AFTER DOMContentLoaded, so all elements exist
+        dom.bgGradient = $('bgGradient');
+        dom.stars = $('stars');
+        dom.cityName = $('cityName');
+        dom.hijriDate = $('hijriDate');
+        dom.gregorianDate = $('gregorianDate');
+        dom.currentPrayerLabel = $('currentPrayerLabel');
+        dom.prayerArabic = $('prayerArabic');
+        dom.prayerEnglish = $('prayerEnglish');
+        dom.hoursValue = $('hoursValue');
+        dom.minutesValue = $('minutesValue');
+        dom.secondsValue = $('secondsValue');
+        dom.prayerTimeDisplay = $('prayerTimeDisplay');
+        dom.compassNeedle = $('compassNeedle');
+        dom.qiblaDegrees = $('qiblaDegrees');
+        dom.calendarModal = $('calendarModal');
+        dom.calModalTitle = $('calModalTitle');
+        dom.calLangToggle = $('calLangToggle');
+        dom.calLangText = $('calLangText');
+        dom.calMonthName = $('calMonthName');
+        dom.calYear = $('calYear');
+        dom.calWeekdays = $('calWeekdays');
+        dom.calDays = $('calDays');
+        dom.calHint = $('calHint');
+        dom.datePrayerModal = $('datePrayerModal');
+        dom.dateModalTitle = $('dateModalTitle');
+        dom.dateModalSubtitle = $('dateModalSubtitle');
+        dom.dpHijriValue = $('dpHijriValue');
+        dom.settingsModal = $('settingsModal');
+        dom.calcMethod = $('calcMethod');
+        dom.schoolSelect = $('schoolSelect');
+        dom.manualCity = $('manualCity');
+        dom.timeFormat24 = $('timeFormat24');
+        dom.enableNotifications = $('enableNotifications');
+        dom.offsetFajr = $('offsetFajr');
+        dom.offsetDhuhr = $('offsetDhuhr');
+        dom.offsetAsr = $('offsetAsr');
+        dom.offsetMaghrib = $('offsetMaghrib');
+        dom.offsetIsha = $('offsetIsha');
+        dom.toast = $('toast');
+        dom.toastMessage = $('toastMessage');
+
         createStars();
         bindEvents();
         loadSettings();
@@ -357,7 +355,7 @@
         updateGregorianDate();
         updateBackgroundTheme();
         setDailyDua();
-        $('currentYear').textContent = new Date().getFullYear();
+        if ($('currentYear')) $('currentYear').textContent = new Date().getFullYear();
         initLangModal();
         await detectLocation();
     }
