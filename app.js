@@ -754,8 +754,10 @@
         }
 
         // --- Secondary Times Update ---
-        if ($('time-imsak')) $('time-imsak').textContent = formatTime(state.todayTimings.Imsak.split(' ')[0]);
-        if ($('time-tahajjud')) $('time-tahajjud').textContent = formatTime(state.todayTimings.Lastthird.split(' ')[0]);
+        let imsakTime = state.jamaatTimes.imsak || (state.todayTimings.Imsak || state.todayTimings.Fajr).split(' ')[0];
+        let tahajjudTime = state.jamaatTimes.tahajjud || (state.todayTimings.Lastthird || "02:00").split(' ')[0];
+        if ($('time-imsak')) $('time-imsak').textContent = formatTime(imsakTime);
+        if ($('time-tahajjud')) $('time-tahajjud').textContent = formatTime(tahajjudTime);
         
         // Calculate Ishraq (Sunrise + X mins)
         let [sh, sm] = state.todayTimings.Sunrise.split(' ')[0].split(':').map(Number);
@@ -793,12 +795,14 @@
         if (state.jamaatTimes.imsak) {
             let d = new Date(); let [h, m] = state.jamaatTimes.imsak.split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['imsak'] = d;
         } else {
-            let d = new Date(); let [h, m] = state.todayTimings.Imsak.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['imsak'] = d;
+            let imsakDefault = state.todayTimings.Imsak || state.todayTimings.Fajr;
+            let d = new Date(); let [h, m] = imsakDefault.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['imsak'] = d;
         }
         if (state.jamaatTimes.tahajjud) {
             let d = new Date(); let [h, m] = state.jamaatTimes.tahajjud.split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['tahajjud'] = d;
         } else {
-            let d = new Date(); let [h, m] = state.todayTimings.Lastthird.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['tahajjud'] = d;
+            let tahajjudDefault = state.todayTimings.Lastthird || "02:00";
+            let d = new Date(); let [h, m] = tahajjudDefault.split(' ')[0].split(':').map(Number); d.setHours(h, m, 0, 0); parsedTimes['tahajjud'] = d;
         }
 
         state._nextPrayer = nextPrayer;
