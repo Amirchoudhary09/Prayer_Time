@@ -231,17 +231,18 @@
         themeMode: localStorage.getItem('pt_theme') || 'auto', // 'auto', 'light', 'dark'
         appLang: localStorage.getItem('pt_lang') || 'en',
         savedLocations: JSON.parse(localStorage.getItem('pt_locations') || '[]'),
-        longPressTimer: null
+        longPressTimer: null,
+        hijriOffset: parseInt(localStorage.getItem('pt_hijri_adj') || '0')
     };
 
     const DAILY_DUAS = [
-        { ar: 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ', en: '"Our Lord, accept from us. Indeed You are the Hearing, the Knowing."' },
-        { ar: 'رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي', en: '"My Lord, I have wronged myself, so forgive me."' },
-        { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', en: '"Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire."' },
-        { ar: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', en: '"Sufficient for us is Allah, and [He is] the best Disposer of affairs."' },
-        { ar: 'رَبِّ زِدْنِي عِلْمًا', en: '"My Lord, increase me in knowledge."' },
-        { ar: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً', en: '"O Allah, I ask You for knowledge that is of benefit, a good provision, and deeds that will be accepted."' },
-        { ar: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ', en: '"O Changer of the hearts, make my heart firm upon Your religion."' }
+        { ar: 'رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ', en: '"Our Lord, accept from us. Indeed You are the Hearing, the Knowing."', ref: 'Quran 2:127' },
+        { ar: 'رَبِّ إِنِّي ظَلَمْتُ نَفْسِي فَاغْفِرْ لِي', en: '"My Lord, I have wronged myself, so forgive me."', ref: 'Quran 28:16' },
+        { ar: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', en: '"Our Lord, give us in this world [that which is] good and in the Hereafter [that which is] good and protect us from the punishment of the Fire."', ref: 'Quran 2:201' },
+        { ar: 'حَسْبُنَا اللَّهُ وَنِعْمَ الْوَكِيلُ', en: '"Sufficient for us is Allah, and [He is] the best Disposer of affairs."', ref: 'Quran 3:173' },
+        { ar: 'رَبِّ زِدْنِي عِلْمًا', en: '"My Lord, increase me in knowledge."', ref: 'Quran 20:114' },
+        { ar: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلاً مُتَقَبَّلاً', en: '"O Allah, I ask You for knowledge that is of benefit, a good provision, and deeds that will be accepted."', ref: 'Sunan Ibn Majah 925' },
+        { ar: 'يَا مُقَلِّبَ الْقُلُوبِ ثَبِّتْ قَلْبِي عَلَى دِينِكَ', en: '"O Changer of the hearts, make my heart firm upon Your religion."', ref: 'Jami` at-Tirmidhi 2140' }
     ];
 
     // ─── DOM Refs ───
@@ -424,6 +425,9 @@
         const dua = DAILY_DUAS[duaIndex];
         $('dailyDuaAr').textContent = dua.ar;
         $('dailyDuaEn').textContent = dua.en;
+        if ($('dailyDuaRef') && dua.ref) {
+            $('dailyDuaRef').textContent = dua.ref;
+        }
     }
 
     // ─── Location Detection ───
@@ -621,7 +625,7 @@
         try {
             const today = new Date();
             const dd = today.getDate(), mm = today.getMonth() + 1, yyyy = today.getFullYear();
-            const url = `${API_BASE}/timings/${dd}-${mm}-${yyyy}?latitude=${state.lat}&longitude=${state.lng}&method=${state.method}&school=${state.school}`;
+            const url = `${API_BASE}/timings/${dd}-${mm}-${yyyy}?latitude=${state.lat}&longitude=${state.lng}&method=${state.method}&school=${state.school}&adj=${state.hijriOffset}`;
             const res = await fetch(url);
             const data = await res.json();
 
@@ -743,6 +747,28 @@
             badge.style.display = 'none';
         }
 
+        // --- Secondary Times Update ---
+        if ($('time-imsak')) $('time-imsak').textContent = formatTime(state.todayTimings.Imsak.split(' ')[0]);
+        if ($('time-tahajjud')) $('time-tahajjud').textContent = formatTime(state.todayTimings.Lastthird.split(' ')[0]);
+        
+        // Calculate Ishraq (Sunrise + 15 mins)
+        let [sh, sm] = state.todayTimings.Sunrise.split(' ')[0].split(':').map(Number);
+        let ishraqDate = new Date();
+        ishraqDate.setHours(sh, sm + 15, 0, 0);
+        let ishH = String(ishraqDate.getHours()).padStart(2, '0');
+        let ishM = String(ishraqDate.getMinutes()).padStart(2, '0');
+        if ($('time-ishraq')) $('time-ishraq').textContent = formatTime(`${ishH}:${ishM}`);
+        parsedTimes['ishraq'] = ishraqDate; // save for makrooh check
+        
+        // Zawaal (Dhuhr - 10 mins)
+        let [dh, dm] = state.todayTimings.Dhuhr.split(' ')[0].split(':').map(Number);
+        let zawalDate = new Date();
+        zawalDate.setHours(dh, dm - 10, 0, 0);
+        let zh = String(zawalDate.getHours()).padStart(2, '0');
+        let zm = String(zawalDate.getMinutes()).padStart(2, '0');
+        if ($('time-zawal')) $('time-zawal').textContent = formatTime(`${zh}:${zm}`);
+        parsedTimes['zawal'] = zawalDate;
+
         state._nextPrayer = nextPrayer;
         state._parsedTimes = parsedTimes;
     }
@@ -758,6 +784,25 @@
             if (target <= now) { target = new Date(target); target.setDate(target.getDate() + 1); }
             const diff = target - now;
             
+            // Makrooh Time Check
+            if ($('makroohWarning')) {
+                let isMakrooh = false;
+                const pt = state._parsedTimes;
+                
+                // 1. Sunrise to Ishraq
+                if (pt.sunrise && pt.ishraq && now >= pt.sunrise && now < pt.ishraq) isMakrooh = true;
+                // 2. Zawaal (10 mins before Dhuhr)
+                else if (pt.zawal && pt.dhuhr && now >= pt.zawal && now < pt.dhuhr) isMakrooh = true;
+                // 3. 10 mins before Maghrib
+                else if (pt.maghrib) {
+                    let maghribMinus10 = new Date(pt.maghrib);
+                    maghribMinus10.setMinutes(maghribMinus10.getMinutes() - 10);
+                    if (now >= maghribMinus10 && now < pt.maghrib) isMakrooh = true;
+                }
+                
+                $('makroohWarning').style.display = isMakrooh ? 'block' : 'none';
+            }
+
             // Check for notifications
             checkNotification(now);
 
@@ -940,7 +985,7 @@
 
         let monthData = null;
         try {
-            const url = `${API_BASE}/calendarByCity/${year}/${month + 1}?city=${state.city}&country=${state.country}&method=${state.method}&school=${state.school}`;
+            const url = `${API_BASE}/calendarByCity/${year}/${month + 1}?city=${state.city}&country=${state.country}&method=${state.method}&school=${state.school}&adj=${state.hijriOffset}`;
             const res = await fetch(url);
             const data = await res.json();
             if (data.code === 200) {
@@ -1009,7 +1054,7 @@
         container.innerHTML = '<div class="cal-loading" style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);">Loading...</div>';
 
         try {
-            const url = `${API_BASE}/hijriCalendar/${hYear}/${hMonth}?latitude=${state.lat}&longitude=${state.lng}&method=${state.method}&school=${state.school}`;
+            const url = `${API_BASE}/hijriCalendarByCity/${hYear}/${hMonth}?city=${state.city}&country=${state.country}&method=${state.method}&school=${state.school}&adj=${state.hijriOffset}`;
             const res = await fetch(url);
             const data = await res.json();
 
@@ -1216,6 +1261,7 @@
         dom.calcMethod.value = state.method;
         dom.schoolSelect.value = state.school;
         dom.timeFormat24.checked = state.use24h;
+        if ($('hijriAdjustment')) $('hijriAdjustment').value = state.hijriOffset.toString();
         
         $('notifyFajr').checked = state.notifyPrefs.fajr;
         $('notifyDhuhr').checked = state.notifyPrefs.dhuhr;
@@ -1264,6 +1310,11 @@
         localStorage.setItem('pt_notify_prefs', JSON.stringify(state.notifyPrefs));
         localStorage.setItem('pt_notify_sound', state.notifySound);
         localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
+        
+        if ($('hijriAdjustment')) {
+            state.hijriOffset = parseInt($('hijriAdjustment').value);
+            localStorage.setItem('pt_hijri_adj', state.hijriOffset);
+        }
         
         state.hijriCalData = null;
         closeSettingsModal();
