@@ -483,6 +483,24 @@
             </div>
         </div>
 
+        <!-- Language Selection Modal -->
+        <div class="modal-overlay" id="langModal">
+            <div class="modal glass-card" id="langModalContent" style="max-width: 400px;">
+                <div class="modal-header">
+                    <h2 data-i18n="selectLanguage">Select Language</h2>
+                    <button class="modal-close" id="closeLangBtn" aria-label="Close Language Modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="langSearchInput" class="setting-input" placeholder="Search language..." style="width: 100%;">
+                    </div>
+                    <div class="language-list" id="languageList" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="app-footer" id="appFooter">
             <div class="daily-motivation" id="dailyMotivation" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">

@@ -1543,3 +1543,25 @@ body {
 .prayer-card:nth-child(4) { animation-delay: 0.2s; }
 .prayer-card:nth-child(5) { animation-delay: 0.25s; }
 .prayer-card:nth-child(6) { animation-delay: 0.3s; }
+
+/* ---------- Language Modal ---------- */
+.lang-list-item {
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-primary);
+}
+.lang-list-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+.lang-list-item.active {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.1);
+    font-weight: 600;
+}

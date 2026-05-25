@@ -39,12 +39,12 @@
     const KAABA_LNG = 39.8262;
 
     const PRAYER_NAMES = {
-        fajr:    { en: 'Fajr',    ar: 'الفجر', hi: 'फ़ज्र' },
-        sunrise: { en: 'Sunrise', ar: 'الشروق', hi: 'सूर्योदय' },
-        dhuhr:   { en: 'Dhuhr',   ar: 'الظهر', hi: 'ज़ुहर' },
-        asr:     { en: 'Asr',     ar: 'العصر', hi: 'अस्र' },
-        maghrib: { en: 'Maghrib', ar: 'المغرب', hi: 'मग़रिब' },
-        isha:    { en: 'Isha',    ar: 'العشاء', hi: 'ईशा' }
+        fajr:    { en: 'Fajr',    ar: 'الفجر', hi: 'फ़ज्र', fr: 'Fajr', ur: 'فجر', bn: 'ফজর', id: 'Subuh', tr: 'İmsak' },
+        sunrise: { en: 'Sunrise', ar: 'الشروق', hi: 'सूर्योदय', fr: 'Lever du soleil', ur: 'طلوع آفتاب', bn: 'সূর্যোদয়', id: 'Syuruk', tr: 'Güneş' },
+        dhuhr:   { en: 'Dhuhr',   ar: 'الظهر', hi: 'ज़ुहर', fr: 'Dhuhr', ur: 'ظہر', bn: 'যোহর', id: 'Zuhur', tr: 'Öğle' },
+        asr:     { en: 'Asr',     ar: 'العصر', hi: 'अस्र', fr: 'Asr', ur: 'عصر', bn: 'আসর', id: 'Asar', tr: 'İkindi' },
+        maghrib: { en: 'Maghrib', ar: 'المغرب', hi: 'मग़रिब', fr: 'Maghrib', ur: 'مغرب', bn: 'মাগরিব', id: 'Maghrib', tr: 'Akşam' },
+        isha:    { en: 'Isha',    ar: 'العشاء', hi: 'ईशा', fr: 'Isha', ur: 'عشاء', bn: 'এশা', id: 'Isya', tr: 'Yatsı' }
     };
 
     const PRAYER_ORDER = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -102,38 +102,87 @@
             seconds: "Seconds"
         },
         hi: {
-            appTitle: "नमाज़ का समय",
-            todayPrayers: "आज के नमाज़ का समय",
-            nextPrayer: "अगली नमाज़",
-            passed: "हो गई",
-            current: "अभी",
-            next: "अगली",
-            qiblaTitle: "क़िबला की दिशा",
-            enableCompass: "कम्पास चालू करें",
-            settingsTitle: "सेटिंग्स",
-            themeTitle: "थीम मोड",
-            calcMethodTitle: "गणना का तरीका",
-            schoolTitle: "न्यायवादी स्कूल (अस्र)",
-            schoolShafii: "शफ़ीई / मालिकी / हनबली",
-            schoolHanafi: "हनफ़ी",
-            manualCityTitle: "मैन्युअल शहर खोज",
-            searchCityBtn: "शहर खोजें",
-            notifPrefsTitle: "सूचना प्राथमिकताएं",
-            enableAllBtn: "सभी चालू करें",
-            notifSoundTitle: "सूचना की आवाज़",
-            sysDefault: "सिस्टम डिफ़ॉल्ट",
-            shortBeep: "छोटी बीप",
-            adhanMakkah: "अज़ान (मक्का)",
-            manualOffsetTitle: "मैन्युअल नमाज़ का समय (जमात का समय)",
-            use24hTitle: "24 घंटे का प्रारूप इस्तेमाल करें",
-            saveSettingsBtn: "सेटिंग्स सहेजें",
-            calModalTitle: "📅 नमाज़ कैलेंडर",
-            calHintText: "👆 नमाज़ का समय देखने के लिए किसी भी तारीख पर टैप करें",
-            hours: "घंटे",
-            minutes: "मिनट",
-            seconds: "सेकंड"
+            appTitle: "नमाज़ का समय", todayPrayers: "आज के नमाज़ का समय", nextPrayer: "अगली नमाज़",
+            passed: "हो गई", current: "अभी", next: "अगली", qiblaTitle: "क़िबला की दिशा", enableCompass: "कम्पास चालू करें",
+            settingsTitle: "सेटिंग्स", themeTitle: "थीम मोड", calcMethodTitle: "गणना का तरीका", schoolTitle: "न्यायवादी स्कूल (अस्र)",
+            schoolShafii: "शफ़ीई / मालिकी / हनबली", schoolHanafi: "हनफ़ी", manualCityTitle: "मैन्युअल शहर खोज", searchCityBtn: "शहर खोजें",
+            notifPrefsTitle: "सूचना प्राथमिकताएं", enableAllBtn: "सभी चालू करें", notifSoundTitle: "सूचना की आवाज़", sysDefault: "सिस्टम डिफ़ॉल्ट",
+            shortBeep: "छोटी बीप", adhanMakkah: "अज़ान (मक्का)", manualOffsetTitle: "मैन्युअल नमाज़ का समय", use24hTitle: "24 घंटे का प्रारूप",
+            saveSettingsBtn: "सहेजें", calModalTitle: "📅 नमाज़ कैलेंडर", calHintText: "तारीख पर टैप करें", hours: "घंटे", minutes: "मिनट", seconds: "सेकंड",
+            selectLanguage: "भाषा चुनें", searchLanguage: "भाषा खोजें..."
+        },
+        ar: {
+            appTitle: "أوقات الصلاة", todayPrayers: "أوقات صلاة اليوم", nextPrayer: "الصلاة القادمة",
+            passed: "انقضت", current: "الآن", next: "التالي", qiblaTitle: "اتجاه القبلة", enableCompass: "تفعيل البوصلة",
+            settingsTitle: "الإعدادات", themeTitle: "وضع المظهر", calcMethodTitle: "طريقة الحساب", schoolTitle: "المذهب الفقهي (العصر)",
+            schoolShafii: "شافعي / مالكي / حنبلي", schoolHanafi: "حنفي", manualCityTitle: "البحث اليدوي عن المدينة", searchCityBtn: "بحث",
+            notifPrefsTitle: "إعدادات الإشعارات", enableAllBtn: "تفعيل الكل", notifSoundTitle: "صوت الإشعار", sysDefault: "النظام الافتراضي",
+            shortBeep: "صوت قصير", adhanMakkah: "أذان (مكة)", manualOffsetTitle: "إعدادات يدوية", use24hTitle: "نظام 24 ساعة",
+            saveSettingsBtn: "حفظ", calModalTitle: "📅 تقويم الصلاة", calHintText: "اضغط على أي تاريخ", hours: "ساعات", minutes: "دقائق", seconds: "ثواني",
+            selectLanguage: "اختر اللغة", searchLanguage: "البحث عن لغة..."
+        },
+        fr: {
+            appTitle: "Heures de Prière", todayPrayers: "Heures d'Aujourd'hui", nextPrayer: "Prochaine Prière",
+            passed: "PASSÉ", current: "EN COURS", next: "SUIVANT", qiblaTitle: "Direction de la Qibla", enableCompass: "Activer la boussole",
+            settingsTitle: "Paramètres", themeTitle: "Mode Thème", calcMethodTitle: "Méthode de calcul", schoolTitle: "École Juridique",
+            schoolShafii: "Shafi'i / Maliki / Hanbali", schoolHanafi: "Hanafi", manualCityTitle: "Recherche manuelle", searchCityBtn: "Rechercher",
+            notifPrefsTitle: "Préférences de notification", enableAllBtn: "Tout activer", notifSoundTitle: "Son de notification", sysDefault: "Défaut",
+            shortBeep: "Bip court", adhanMakkah: "Adhan (Makkah)", manualOffsetTitle: "Décalages manuels", use24hTitle: "Format 24h",
+            saveSettingsBtn: "Sauvegarder", calModalTitle: "📅 Calendrier", calHintText: "Appuyez sur une date", hours: "Heures", minutes: "Minutes", seconds: "Secondes",
+            selectLanguage: "Choisir la langue", searchLanguage: "Rechercher une langue..."
+        },
+        ur: {
+            appTitle: "نماز کے اوقات", todayPrayers: "آج کے اوقات", nextPrayer: "اگلی نماز",
+            passed: "گزر گئی", current: "ابھی", next: "اگلی", qiblaTitle: "قبلہ کی سمت", enableCompass: "قطب نما آن کریں",
+            settingsTitle: "ترتیبات", themeTitle: "تھیم", calcMethodTitle: "حساب کا طریقہ", schoolTitle: "فقہی مسلک",
+            schoolShafii: "شافعی / مالکی / حنبلی", schoolHanafi: "حنفی", manualCityTitle: "شہر تلاش کریں", searchCityBtn: "تلاش",
+            notifPrefsTitle: "اطلاعات", enableAllBtn: "سب آن کریں", notifSoundTitle: "آواز", sysDefault: "سسٹم",
+            shortBeep: "چھوٹی بیپ", adhanMakkah: "اذان (مکہ)", manualOffsetTitle: "جماعت کا وقت", use24hTitle: "24 گھنٹے کا وقت",
+            saveSettingsBtn: "محفوظ کریں", calModalTitle: "📅 کیلنڈر", calHintText: "تاریخ پر کلک کریں", hours: "گھنٹے", minutes: "منٹ", seconds: "سیکنڈ",
+            selectLanguage: "زبان منتخب کریں", searchLanguage: "زبان تلاش کریں..."
+        },
+        bn: {
+            appTitle: "নামাজের সময়", todayPrayers: "আজকের নামাজের সময়", nextPrayer: "পরবর্তী নামাজ",
+            passed: "অতীত", current: "বর্তমান", next: "পরবর্তী", qiblaTitle: "কিবলার দিক", enableCompass: "কম্পাস চালু করুন",
+            settingsTitle: "সেটিংস", themeTitle: "থিম", calcMethodTitle: "গণনার পদ্ধতি", schoolTitle: "মাযহাব (আসর)",
+            schoolShafii: "শাফিঈ / মালিকি / হাম্বলি", schoolHanafi: "হানাফি", manualCityTitle: "শহর খুঁজুন", searchCityBtn: "খুঁজুন",
+            notifPrefsTitle: "বিজ্ঞপ্তি সেটিংস", enableAllBtn: "সব চালু করুন", notifSoundTitle: "বিজ্ঞপ্তির শব্দ", sysDefault: "ডিফল্ট",
+            shortBeep: "ছোট বিপ", adhanMakkah: "আজান (মক্কা)", manualOffsetTitle: "ম্যানুয়াল সময়", use24hTitle: "২৪ ঘন্টা বিন্যাস",
+            saveSettingsBtn: "সংরক্ষণ করুন", calModalTitle: "📅 ক্যালেন্ডার", calHintText: "তারিখে ট্যাপ করুন", hours: "ঘন্টা", minutes: "মিনিট", seconds: "সেকেন্ড",
+            selectLanguage: "ভাষা নির্বাচন করুন", searchLanguage: "ভাষা খুঁজুন..."
+        },
+        id: {
+            appTitle: "Waktu Shalat", todayPrayers: "Waktu Shalat Hari Ini", nextPrayer: "Shalat Berikutnya",
+            passed: "LEWAT", current: "SEKARANG", next: "SELANJUTNYA", qiblaTitle: "Arah Kiblat", enableCompass: "Aktifkan Kompas",
+            settingsTitle: "Pengaturan", themeTitle: "Tema", calcMethodTitle: "Metode Perhitungan", schoolTitle: "Mazhab (Ashar)",
+            schoolShafii: "Syafi'i / Maliki / Hambali", schoolHanafi: "Hanafi", manualCityTitle: "Cari Kota", searchCityBtn: "Cari",
+            notifPrefsTitle: "Notifikasi", enableAllBtn: "Aktifkan Semua", notifSoundTitle: "Suara Notifikasi", sysDefault: "Default",
+            shortBeep: "Bip Pendek", adhanMakkah: "Adzan (Makkah)", manualOffsetTitle: "Waktu Jamaah", use24hTitle: "Format 24 Jam",
+            saveSettingsBtn: "Simpan", calModalTitle: "📅 Kalender", calHintText: "Ketuk tanggal", hours: "Jam", minutes: "Menit", seconds: "Detik",
+            selectLanguage: "Pilih Bahasa", searchLanguage: "Cari bahasa..."
+        },
+        tr: {
+            appTitle: "Namaz Vakitleri", todayPrayers: "Bugünün Vakitleri", nextPrayer: "Sonraki Vakit",
+            passed: "GEÇTİ", current: "ŞU AN", next: "SONRAKİ", qiblaTitle: "Kıble Yönü", enableCompass: "Pusulayı Aç",
+            settingsTitle: "Ayarlar", themeTitle: "Tema", calcMethodTitle: "Hesaplama Yöntemi", schoolTitle: "Mezhep (İkindi)",
+            schoolShafii: "Şafii / Maliki / Hanbeli", schoolHanafi: "Hanefi", manualCityTitle: "Şehir Ara", searchCityBtn: "Ara",
+            notifPrefsTitle: "Bildirimler", enableAllBtn: "Tümünü Aç", notifSoundTitle: "Bildirim Sesi", sysDefault: "Varsayılan",
+            shortBeep: "Kısa Bip", adhanMakkah: "Ezan (Mekke)", manualOffsetTitle: "Cemaat Vakti", use24hTitle: "24 Saat Formatı",
+            saveSettingsBtn: "Kaydet", calModalTitle: "📅 Takvim", calHintText: "Tarihe dokunun", hours: "Saat", minutes: "Dakika", seconds: "Saniye",
+            selectLanguage: "Dil Seç", searchLanguage: "Dil ara..."
         }
     };
+
+    const SUPPORTED_LANGUAGES = [
+        { code: 'en', name: 'English', native: 'English' },
+        { code: 'hi', name: 'Hindi', native: 'हिन्दी' },
+        { code: 'ar', name: 'Arabic', native: 'العربية' },
+        { code: 'fr', name: 'French', native: 'Français' },
+        { code: 'ur', name: 'Urdu', native: 'اردو' },
+        { code: 'bn', name: 'Bengali', native: 'বাংলা' },
+        { code: 'id', name: 'Indonesian', native: 'Bahasa Indonesia' },
+        { code: 'tr', name: 'Turkish', native: 'Türkçe' }
+    ];
 
     // ─── State ───
     const state = {
@@ -225,6 +274,55 @@
         toastMessage: $('toastMessage')
     };
 
+    // ─── Language Modal Logic ───
+    function initLangModal() {
+        const langList = $('languageList');
+        if (!langList) return;
+        
+        function renderLanguages(filter = '') {
+            langList.innerHTML = '';
+            SUPPORTED_LANGUAGES.forEach(lang => {
+                if (lang.name.toLowerCase().includes(filter.toLowerCase()) || lang.native.toLowerCase().includes(filter.toLowerCase())) {
+                    const el = document.createElement('div');
+                    el.className = 'lang-list-item' + (state.appLang === lang.code ? ' active' : '');
+                    el.innerHTML = `<span>${lang.native}</span><span style="opacity:0.5; font-size:0.85rem;">${lang.name}</span>`;
+                    el.addEventListener('click', () => {
+                        state.appLang = lang.code;
+                        localStorage.setItem('pt_lang', state.appLang);
+                        applyLanguage();
+                        renderLanguages(filter);
+                        $('langModal').classList.remove('active');
+                        showToast(`🌐 Language changed`);
+                    });
+                    langList.appendChild(el);
+                }
+            });
+        }
+        
+        renderLanguages();
+        
+        const searchInput = $('langSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                renderLanguages(e.target.value);
+            });
+        }
+        
+        if ($('langToggleBtn')) {
+            $('langToggleBtn').addEventListener('click', () => {
+                renderLanguages();
+                if(searchInput) searchInput.value = '';
+                $('langModal').classList.add('active');
+            });
+        }
+        
+        if ($('closeLangBtn')) {
+            $('closeLangBtn').addEventListener('click', () => {
+                $('langModal').classList.remove('active');
+            });
+        }
+    }
+
     // ─── Initialize ───
     async function init() {
         createStars();
@@ -235,14 +333,8 @@
         updateBackgroundTheme();
         setDailyDua();
         $('currentYear').textContent = new Date().getFullYear();
+        initLangModal();
         await detectLocation();
-        if ($('langToggleBtn')) {
-            $('langToggleBtn').addEventListener('click', () => {
-                state.appLang = state.appLang === 'en' ? 'hi' : 'en';
-                localStorage.setItem('pt_lang', state.appLang);
-                applyLanguage();
-            });
-        }
     }
 
     // ─── Stars Background ───
