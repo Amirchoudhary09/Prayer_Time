@@ -7,18 +7,44 @@
 (function () {
     'use strict';
 
+    // ─── UI Translater ───
+    function applyLanguage() {
+        const lang = state.appLang;
+        const dict = TRANSLATIONS[lang];
+        
+        // Translate all data-i18n elements
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (dict[key]) {
+                el.textContent = dict[key];
+            }
+        });
+        
+        // Translate prayer names in cards
+        PRAYER_ORDER.forEach(key => {
+            const card = document.getElementById(`card-${key}`);
+            if (card) {
+                const nameEl = card.querySelector('.prayer-card-name');
+                if (nameEl) nameEl.textContent = lang === 'hi' ? PRAYER_NAMES[key].hi : PRAYER_NAMES[key].en;
+            }
+        });
+        
+        // Also update next prayer title if already running
+        updatePrayerCards();
+    }
+
     // ─── Constants ───
     const API_BASE = 'https://api.aladhan.com/v1';
     const KAABA_LAT = 21.4225;
     const KAABA_LNG = 39.8262;
 
     const PRAYER_NAMES = {
-        fajr:    { en: 'Fajr',    ar: 'الفجر' },
-        sunrise: { en: 'Sunrise', ar: 'الشروق' },
-        dhuhr:   { en: 'Dhuhr',   ar: 'الظهر' },
-        asr:     { en: 'Asr',     ar: 'العصر' },
-        maghrib: { en: 'Maghrib', ar: 'المغرب' },
-        isha:    { en: 'Isha',    ar: 'العشاء' }
+        fajr:    { en: 'Fajr',    ar: 'الفجر', hi: 'फ़ज्र' },
+        sunrise: { en: 'Sunrise', ar: 'الشروق', hi: 'सूर्योदय' },
+        dhuhr:   { en: 'Dhuhr',   ar: 'الظهر', hi: 'ज़ुहर' },
+        asr:     { en: 'Asr',     ar: 'العصر', hi: 'अस्र' },
+        maghrib: { en: 'Maghrib', ar: 'المغرب', hi: 'मग़रिब' },
+        isha:    { en: 'Isha',    ar: 'العشاء', hi: 'ईशा' }
     };
 
     const PRAYER_ORDER = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -41,6 +67,73 @@
     function toUrduNumber(num) {
         return String(num).split('').map(d => URDU_DIGITS[parseInt(d)] || d).join('');
     }
+
+    const TRANSLATIONS = {
+        en: {
+            appTitle: "Prayer Times",
+            todayPrayers: "Today's Prayer Times",
+            nextPrayer: "Next Prayer",
+            passed: "PASSED",
+            current: "CURRENT",
+            next: "NEXT",
+            qiblaTitle: "Qibla Direction",
+            enableCompass: "Enable Device Compass",
+            settingsTitle: "Settings",
+            themeTitle: "Theme Mode",
+            calcMethodTitle: "Calculation Method",
+            schoolTitle: "Juristic School (Asr)",
+            schoolShafii: "Shafi'i / Maliki / Hanbali",
+            schoolHanafi: "Hanafi",
+            manualCityTitle: "Manual City Search",
+            searchCityBtn: "Search City",
+            notifPrefsTitle: "Notification Preferences",
+            enableAllBtn: "Enable All",
+            notifSoundTitle: "Notification Sound",
+            sysDefault: "System Default",
+            shortBeep: "Short Beep",
+            adhanMakkah: "Adhan (Makkah)",
+            manualOffsetTitle: "Manual Prayer Time Offsets (Jamaat Time)",
+            use24hTitle: "Use 24-hour format",
+            saveSettingsBtn: "Save Settings",
+            calModalTitle: "📅 Prayer Calendar",
+            calHintText: "👆 Tap any date to see prayer times",
+            hours: "Hours",
+            minutes: "Minutes",
+            seconds: "Seconds"
+        },
+        hi: {
+            appTitle: "नमाज़ का समय",
+            todayPrayers: "आज के नमाज़ का समय",
+            nextPrayer: "अगली नमाज़",
+            passed: "हो गई",
+            current: "अभी",
+            next: "अगली",
+            qiblaTitle: "क़िबला की दिशा",
+            enableCompass: "कम्पास चालू करें",
+            settingsTitle: "सेटिंग्स",
+            themeTitle: "थीम मोड",
+            calcMethodTitle: "गणना का तरीका",
+            schoolTitle: "न्यायवादी स्कूल (अस्र)",
+            schoolShafii: "शफ़ीई / मालिकी / हनबली",
+            schoolHanafi: "हनफ़ी",
+            manualCityTitle: "मैन्युअल शहर खोज",
+            searchCityBtn: "शहर खोजें",
+            notifPrefsTitle: "सूचना प्राथमिकताएं",
+            enableAllBtn: "सभी चालू करें",
+            notifSoundTitle: "सूचना की आवाज़",
+            sysDefault: "सिस्टम डिफ़ॉल्ट",
+            shortBeep: "छोटी बीप",
+            adhanMakkah: "अज़ान (मक्का)",
+            manualOffsetTitle: "मैन्युअल नमाज़ का समय (जमात का समय)",
+            use24hTitle: "24 घंटे का प्रारूप इस्तेमाल करें",
+            saveSettingsBtn: "सेटिंग्स सहेजें",
+            calModalTitle: "📅 नमाज़ कैलेंडर",
+            calHintText: "👆 नमाज़ का समय देखने के लिए किसी भी तारीख पर टैप करें",
+            hours: "घंटे",
+            minutes: "मिनट",
+            seconds: "सेकंड"
+        }
+    };
 
     // ─── State ───
     const state = {
@@ -69,6 +162,7 @@
         
         // New Features State
         themeMode: localStorage.getItem('pt_theme') || 'auto', // 'auto', 'light', 'dark'
+        appLang: localStorage.getItem('pt_lang') || 'en',
         savedLocations: JSON.parse(localStorage.getItem('pt_locations') || '[]'),
         longPressTimer: null
     };
@@ -136,11 +230,19 @@
         createStars();
         bindEvents();
         loadSettings();
+        applyLanguage();
         updateGregorianDate();
         updateBackgroundTheme();
         setDailyDua();
         $('currentYear').textContent = new Date().getFullYear();
         await detectLocation();
+        if ($('langToggleBtn')) {
+            $('langToggleBtn').addEventListener('click', () => {
+                state.appLang = state.appLang === 'en' ? 'hi' : 'en';
+                localStorage.setItem('pt_lang', state.appLang);
+                applyLanguage();
+            });
+        }
     }
 
     // ─── Stars Background ───
@@ -476,6 +578,9 @@
             const card = document.getElementById(`card-${key}`);
             const timeEl = document.getElementById(`time-${key}`);
             const statusEl = document.getElementById(`status-${key}`);
+            const isPassed = (currentPrayer && PRAYER_ORDER.indexOf(key) < PRAYER_ORDER.indexOf(currentPrayer));
+            const isCurrent = (key === currentPrayer && key !== 'sunrise');
+            const isNext = (key === nextPrayer);
             
             let displayTime = timingsMap[key].split(' ')[0];
             if (state.jamaatTimes[key]) {
@@ -483,15 +588,19 @@
             }
             timeEl.textContent = formatTime(displayTime);
             card.classList.remove('active', 'next', 'passed');
-            statusEl.textContent = '';
-
-            if (key === currentPrayer && key !== 'sunrise') {
-                card.classList.add('active'); statusEl.textContent = 'Current';
-            } else if (key === nextPrayer) {
-                card.classList.add('next'); statusEl.textContent = 'Next';
-            } else if (currentPrayer && PRAYER_ORDER.indexOf(key) < PRAYER_ORDER.indexOf(currentPrayer)) {
-                card.classList.add('passed'); statusEl.textContent = 'Passed';
+            
+            let statusText = "";
+            if (isPassed) {
+                card.classList.add('passed');
+                statusText = state.appLang === 'hi' ? TRANSLATIONS.hi.passed : TRANSLATIONS.en.passed;
+            } else if (isCurrent) {
+                card.classList.add('active');
+                statusText = state.appLang === 'hi' ? TRANSLATIONS.hi.current : TRANSLATIONS.en.current;
+            } else if (isNext) {
+                card.classList.add('next');
+                statusText = state.appLang === 'hi' ? TRANSLATIONS.hi.next : TRANSLATIONS.en.next;
             }
+            statusEl.textContent = statusText;
         });
 
         const badge = $('jamaatTimeBadge');
@@ -500,8 +609,8 @@
         if (nextPrayer) {
             const info = PRAYER_NAMES[nextPrayer];
             dom.prayerArabic.textContent = info.ar;
-            dom.prayerEnglish.textContent = info.en;
-            dom.currentPrayerLabel.textContent = 'Next Prayer';
+            dom.prayerEnglish.textContent = state.appLang === 'hi' ? info.hi : info.en;
+            dom.currentPrayerLabel.textContent = state.appLang === 'hi' ? TRANSLATIONS.hi.nextPrayer : TRANSLATIONS.en.nextPrayer;
             
             let displayTime = timingsMap[nextPrayer].split(' ')[0];
             let rawNextTime = displayTime;
@@ -519,8 +628,8 @@
             }
         } else {
             dom.prayerArabic.textContent = PRAYER_NAMES.fajr.ar;
-            dom.prayerEnglish.textContent = 'Fajr (Tomorrow)';
-            dom.currentPrayerLabel.textContent = 'Next Prayer';
+            dom.prayerEnglish.textContent = state.appLang === 'hi' ? PRAYER_NAMES.fajr.hi : PRAYER_NAMES.fajr.en;
+            dom.currentPrayerLabel.textContent = state.appLang === 'hi' ? TRANSLATIONS.hi.nextPrayer : TRANSLATIONS.en.nextPrayer;
             badge.style.display = 'none';
         }
 

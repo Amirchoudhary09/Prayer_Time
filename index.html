@@ -29,11 +29,14 @@
                 <div class="header-left">
                     <div class="crescent-icon">☪</div>
                     <div class="header-text">
-                        <h1 id="appTitle">Prayer Times</h1>
+                        <h1 id="appTitle" data-i18n="appTitle">Prayer Times</h1>
                         <p class="arabic-subtitle" id="arabicSubtitle">أوقات الصلاة</p>
                     </div>
                 </div>
                 <div class="header-right">
+                    <button class="icon-btn" id="langToggleBtn" title="Change Language" aria-label="Change Language">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+                    </button>
                     <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle Theme">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
                     </button>
@@ -79,7 +82,7 @@
                     <span class="edit-icon" style="margin-left:4px; opacity:0.7;">✏️</span>
                 </div>
                 <div class="hero-glow"></div>
-                <div class="current-prayer-label" id="currentPrayerLabel">Next Prayer</div>
+                <div class="current-prayer-label" id="currentPrayerLabel" data-i18n="nextPrayer">Next Prayer</div>
                 <div class="current-prayer-name" id="currentPrayerName">
                     <span class="prayer-arabic" id="prayerArabic">--</span>
                     <span class="prayer-english" id="prayerEnglish">Loading...</span>
@@ -87,17 +90,17 @@
                 <div class="countdown-timer" id="countdownTimer">
                     <div class="timer-segment">
                         <span class="timer-value" id="hoursValue">00</span>
-                        <span class="timer-label">Hours</span>
+                        <span class="timer-label" data-i18n="hours">Hours</span>
                     </div>
                     <div class="timer-separator">:</div>
                     <div class="timer-segment">
                         <span class="timer-value" id="minutesValue">00</span>
-                        <span class="timer-label">Minutes</span>
+                        <span class="timer-label" data-i18n="minutes">Minutes</span>
                     </div>
                     <div class="timer-separator">:</div>
                     <div class="timer-segment">
                         <span class="timer-value" id="secondsValue">00</span>
-                        <span class="timer-label">Seconds</span>
+                        <span class="timer-label" data-i18n="seconds">Seconds</span>
                     </div>
                 </div>
                 <div class="prayer-time-display" id="prayerTimeDisplay">--:--</div>
@@ -177,7 +180,7 @@
         <!-- Qibla Direction -->
         <section class="qibla-section" id="qiblaSection">
             <h2 class="section-title">
-                <span>Qibla Direction</span>
+                <span data-i18n="qiblaTitle">Qibla Direction</span>
                 <span class="section-line"></span>
             </h2>
             <div class="qibla-card glass-card">
@@ -195,7 +198,7 @@
                 <div class="qibla-info">
                     <div class="qibla-degrees" id="qiblaDegrees">--°</div>
                     <div class="qibla-label">from North</div>
-                    <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;">Enable Device Compass</button>
+                    <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;" data-i18n="enableCompass">Enable Device Compass</button>
                 </div>
             </div>
         </section>
@@ -208,7 +211,7 @@
                         <span class="lang-icon">🌐</span>
                         <span class="lang-text" id="calLangText">اردو</span>
                     </button>
-                    <h2 class="cal-modal-title" id="calModalTitle">📅 Prayer Calendar</h2>
+                    <h2 class="cal-modal-title" id="calModalTitle" data-i18n="calModalTitle">📅 Prayer Calendar</h2>
                     <button class="modal-close" id="closeCalendarBtn" aria-label="Close Calendar">&times;</button>
                 </div>
                 <div class="cal-header">
@@ -229,7 +232,7 @@
                 <div class="cal-days" id="calDays">
                     <!-- Filled by JS -->
                 </div>
-                <div class="cal-hint" id="calHint">👆 Tap any date to see prayer times</div>
+                <div class="cal-hint" id="calHint" data-i18n="calHintText">👆 Tap any date to see prayer times</div>
             </div>
         </div>
 
