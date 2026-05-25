@@ -436,66 +436,66 @@
 
     // ─── Location Detection ───
     async function detectLocation() {
-        // If we have saved locations, load the first one (most recent active)
+        // If saved location exists, use it instantly then silently refresh
         if (state.savedLocations.length > 0) {
             const loc = state.savedLocations[0];
-            state.lat = loc.lat;
-            state.lng = loc.lng;
-            state.city = loc.city;
-            state.country = loc.country;
+            state.lat = loc.lat; state.lng = loc.lng;
+            state.city = loc.city; state.country = loc.country;
             dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-            await fetchPrayerTimes();
+            fetchPrayerTimes(); // No await — instant!
             calculateQibla();
+            _detectInBackground();
             return;
         }
 
-        dom.cityName.textContent = 'Detecting location...';
+        // First time: Show Makkah times INSTANTLY, detect real location in background
+        state.lat = 21.4225; state.lng = 39.8262;
+        state.city = 'Makkah'; state.country = 'Saudi Arabia';
+        dom.cityName.textContent = '📍 Detecting location...';
+        fetchPrayerTimes(); // No await — show times right away!
+        calculateQibla();
+        _detectInBackground();
+    }
 
+    async function _detectInBackground() {
+        // Step 1: Try IP location (fast, no permission needed)
+        try {
+            const controller = new AbortController();
+            const tid = setTimeout(() => controller.abort(), 4000);
+            const res = await fetch('https://ipapi.co/json/', { signal: controller.signal });
+            clearTimeout(tid);
+            const d = await res.json();
+            if (d && d.latitude) {
+                state.lat = d.latitude; state.lng = d.longitude;
+                state.city = d.city || 'Unknown'; state.country = d.country_name || '';
+                dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
+                saveCurrentLocationToHistory();
+                fetchPrayerTimes(); calculateQibla();
+            }
+        } catch { /* IP failed, will try GPS */ }
+
+        // Step 2: Try GPS for precise location
         if ('geolocation' in navigator) {
             try {
-                const pos = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(resolve, reject, {
-                        enableHighAccuracy: true, timeout: 10000, maximumAge: 300000
-                    });
-                });
-                state.lat = pos.coords.latitude;
-                state.lng = pos.coords.longitude;
+                const pos = await new Promise((res, rej) =>
+                    navigator.geolocation.getCurrentPosition(res, rej, {
+                        enableHighAccuracy: false, timeout: 8000, maximumAge: 600000
+                    })
+                );
+                state.lat = pos.coords.latitude; state.lng = pos.coords.longitude;
                 await reverseGeocode(state.lat, state.lng);
                 saveCurrentLocationToHistory();
-                await fetchPrayerTimes();
-                calculateQibla();
-                showToast('📍 Location detected successfully!');
-            } catch (err) {
-                console.warn('Geolocation failed:', err);
-                await fallbackLocation();
-            }
-        } else {
-            await fallbackLocation();
+                fetchPrayerTimes(); calculateQibla();
+                showToast('📍 Location updated!');
+            } catch { /* GPS failed — IP or Makkah already showing */ }
         }
     }
 
     async function fallbackLocation() {
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            state.lat = data.latitude;
-            state.lng = data.longitude;
-            state.city = data.city || 'Unknown';
-            state.country = data.country_name || '';
-            dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-            saveCurrentLocationToHistory();
-            await fetchPrayerTimes();
-            calculateQibla();
-            showToast('📍 Location detected via IP');
-        } catch (err) {
-            console.error('Fallback location failed:', err);
-            state.lat = 21.4225; state.lng = 39.8262;
-            state.city = 'Makkah'; state.country = 'Saudi Arabia';
-            dom.cityName.textContent = 'Makkah, Saudi Arabia (Default)';
-            await fetchPrayerTimes();
-            calculateQibla();
-            showToast('⚠️ Using default location: Makkah');
-        }
+        state.lat = 21.4225; state.lng = 39.8262;
+        state.city = 'Makkah'; state.country = 'Saudi Arabia';
+        dom.cityName.textContent = 'Makkah, Saudi Arabia (Default)';
+        await fetchPrayerTimes(); calculateQibla();
     }
 
     async function reverseGeocode(lat, lng) {
