@@ -1388,8 +1388,10 @@
     let currentEditingPrayer = null;
     function openEditTimeModal(prayerKey) {
         currentEditingPrayer = prayerKey;
-        const info = PRAYER_NAMES[prayerKey];
-        $('editTimeTitle').textContent = `Set Jamaat: ${state.appLang === 'hi' ? info.hi : info.en}`;
+        const info = PRAYER_NAMES[prayerKey] || { en: prayerKey, hi: prayerKey };
+        let titleName = state.appLang === 'hi' ? info.hi : info.en;
+        let isJamaat = !['imsak', 'sunrise', 'ishraq', 'zawal', 'tahajjud'].includes(prayerKey);
+        $('editTimeTitle').textContent = isJamaat ? `Set Jamaat: ${titleName}` : `Set Time: ${titleName}`;
         $('editTimeInput').value = state.jamaatTimes[prayerKey] || '';
         $('editTimeModal').classList.add('active');
         document.body.style.overflow = 'hidden';
