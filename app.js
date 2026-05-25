@@ -1302,23 +1302,23 @@
         if ($('hijriAdjustment')) $('hijriAdjustment').value = state.hijriOffset.toString();
         if ($('ishraqOffset')) $('ishraqOffset').value = state.ishraqOffset.toString();
         if ($('makroohOffset')) $('makroohOffset').value = state.makroohOffset.toString();
-        $('notifyImsak').checked = state.notifyPrefs.imsak;
-        $('notifyFajr').checked = state.notifyPrefs.fajr;
-        $('notifySunrise').checked = state.notifyPrefs.sunrise;
-        $('notifyIshraq').checked = state.notifyPrefs.ishraq;
-        $('notifyZawal').checked = state.notifyPrefs.zawal;
-        $('notifyDhuhr').checked = state.notifyPrefs.dhuhr;
-        $('notifyAsr').checked = state.notifyPrefs.asr;
-        $('notifyMaghrib').checked = state.notifyPrefs.maghrib;
-        $('notifyIsha').checked = state.notifyPrefs.isha;
-        $('notifyTahajjud').checked = state.notifyPrefs.tahajjud;
-        $('notifySound').value = state.notifySound;
+        if ($('notifyImsak')) $('notifyImsak').checked = state.notifyPrefs.imsak;
+        if ($('notifyFajr')) $('notifyFajr').checked = state.notifyPrefs.fajr;
+        if ($('notifySunrise')) $('notifySunrise').checked = state.notifyPrefs.sunrise;
+        if ($('notifyIshraq')) $('notifyIshraq').checked = state.notifyPrefs.ishraq;
+        if ($('notifyZawal')) $('notifyZawal').checked = state.notifyPrefs.zawal;
+        if ($('notifyDhuhr')) $('notifyDhuhr').checked = state.notifyPrefs.dhuhr;
+        if ($('notifyAsr')) $('notifyAsr').checked = state.notifyPrefs.asr;
+        if ($('notifyMaghrib')) $('notifyMaghrib').checked = state.notifyPrefs.maghrib;
+        if ($('notifyIsha')) $('notifyIsha').checked = state.notifyPrefs.isha;
+        if ($('notifyTahajjud')) $('notifyTahajjud').checked = state.notifyPrefs.tahajjud;
+        if ($('notifySound')) $('notifySound').value = state.notifySound;
         
-        dom.offsetFajr.value = state.jamaatTimes.fajr || '';
-        dom.offsetDhuhr.value = state.jamaatTimes.dhuhr || '';
-        dom.offsetAsr.value = state.jamaatTimes.asr || '';
-        dom.offsetMaghrib.value = state.jamaatTimes.maghrib || '';
-        dom.offsetIsha.value = state.jamaatTimes.isha || '';
+        if (dom.offsetFajr) dom.offsetFajr.value = state.jamaatTimes.fajr || '';
+        if (dom.offsetDhuhr) dom.offsetDhuhr.value = state.jamaatTimes.dhuhr || '';
+        if (dom.offsetAsr) dom.offsetAsr.value = state.jamaatTimes.asr || '';
+        if (dom.offsetMaghrib) dom.offsetMaghrib.value = state.jamaatTimes.maghrib || '';
+        if (dom.offsetIsha) dom.offsetIsha.value = state.jamaatTimes.isha || '';
     }
 
     function saveSettings() {
@@ -1326,18 +1326,20 @@
         state.school = parseInt(dom.schoolSelect.value);
         state.use24h = dom.timeFormat24.checked;
         state.notifyPrefs = {
-            imsak: $('notifyImsak').checked,
-            fajr: $('notifyFajr').checked,
-            sunrise: $('notifySunrise').checked,
-            ishraq: $('notifyIshraq').checked,
-            zawal: $('notifyZawal').checked,
-            dhuhr: $('notifyDhuhr').checked,
-            asr: $('notifyAsr').checked,
-            maghrib: $('notifyMaghrib').checked,
-            isha: $('notifyIsha').checked,
-            tahajjud: $('notifyTahajjud').checked
+            imsak: $('notifyImsak') ? $('notifyImsak').checked : (state.notifyPrefs.imsak || false),
+            fajr: $('notifyFajr') ? $('notifyFajr').checked : (state.notifyPrefs.fajr || false),
+            sunrise: $('notifySunrise') ? $('notifySunrise').checked : (state.notifyPrefs.sunrise || false),
+            ishraq: $('notifyIshraq') ? $('notifyIshraq').checked : (state.notifyPrefs.ishraq || false),
+            zawal: $('notifyZawal') ? $('notifyZawal').checked : (state.notifyPrefs.zawal || false),
+            dhuhr: $('notifyDhuhr') ? $('notifyDhuhr').checked : (state.notifyPrefs.dhuhr || false),
+            asr: $('notifyAsr') ? $('notifyAsr').checked : (state.notifyPrefs.asr || false),
+            maghrib: $('notifyMaghrib') ? $('notifyMaghrib').checked : (state.notifyPrefs.maghrib || false),
+            isha: $('notifyIsha') ? $('notifyIsha').checked : (state.notifyPrefs.isha || false),
+            tahajjud: $('notifyTahajjud') ? $('notifyTahajjud').checked : (state.notifyPrefs.tahajjud || false)
         };
-        state.notifySound = $('notifySound').value;
+        if ($('notifySound')) {
+            state.notifySound = $('notifySound').value;
+        }
         
         const anyNotifyEnabled = Object.values(state.notifyPrefs).some(v => v);
         if (anyNotifyEnabled && Notification.permission !== 'granted') {
