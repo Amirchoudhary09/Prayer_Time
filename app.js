@@ -232,7 +232,9 @@
         appLang: localStorage.getItem('pt_lang') || 'en',
         savedLocations: JSON.parse(localStorage.getItem('pt_locations') || '[]'),
         longPressTimer: null,
-        hijriOffset: parseInt(localStorage.getItem('pt_hijri_adj') || '0')
+        hijriOffset: parseInt(localStorage.getItem('pt_hijri_adj') || '0'),
+        ishraqOffset: parseInt(localStorage.getItem('pt_ishraq_offset') || '15'),
+        makroohOffset: parseInt(localStorage.getItem('pt_makrooh_offset') || '10')
     };
 
     const DAILY_DUAS = [
@@ -751,19 +753,19 @@
         if ($('time-imsak')) $('time-imsak').textContent = formatTime(state.todayTimings.Imsak.split(' ')[0]);
         if ($('time-tahajjud')) $('time-tahajjud').textContent = formatTime(state.todayTimings.Lastthird.split(' ')[0]);
         
-        // Calculate Ishraq (Sunrise + 15 mins)
+        // Calculate Ishraq (Sunrise + X mins)
         let [sh, sm] = state.todayTimings.Sunrise.split(' ')[0].split(':').map(Number);
         let ishraqDate = new Date();
-        ishraqDate.setHours(sh, sm + 15, 0, 0);
+        ishraqDate.setHours(sh, sm + state.ishraqOffset, 0, 0);
         let ishH = String(ishraqDate.getHours()).padStart(2, '0');
         let ishM = String(ishraqDate.getMinutes()).padStart(2, '0');
         if ($('time-ishraq')) $('time-ishraq').textContent = formatTime(`${ishH}:${ishM}`);
         parsedTimes['ishraq'] = ishraqDate; // save for makrooh check
         
-        // Zawaal (Dhuhr - 10 mins)
+        // Zawaal (Dhuhr - X mins)
         let [dh, dm] = state.todayTimings.Dhuhr.split(' ')[0].split(':').map(Number);
         let zawalDate = new Date();
-        zawalDate.setHours(dh, dm - 10, 0, 0);
+        zawalDate.setHours(dh, dm - state.makroohOffset, 0, 0);
         let zh = String(zawalDate.getHours()).padStart(2, '0');
         let zm = String(zawalDate.getMinutes()).padStart(2, '0');
         if ($('time-zawal')) $('time-zawal').textContent = formatTime(`${zh}:${zm}`);
@@ -793,11 +795,11 @@
                 if (pt.sunrise && pt.ishraq && now >= pt.sunrise && now < pt.ishraq) isMakrooh = true;
                 // 2. Zawaal (10 mins before Dhuhr)
                 else if (pt.zawal && pt.dhuhr && now >= pt.zawal && now < pt.dhuhr) isMakrooh = true;
-                // 3. 10 mins before Maghrib
+                // 3. X mins before Maghrib
                 else if (pt.maghrib) {
-                    let maghribMinus10 = new Date(pt.maghrib);
-                    maghribMinus10.setMinutes(maghribMinus10.getMinutes() - 10);
-                    if (now >= maghribMinus10 && now < pt.maghrib) isMakrooh = true;
+                    let maghribMinus = new Date(pt.maghrib);
+                    maghribMinus.setMinutes(maghribMinus.getMinutes() - state.makroohOffset);
+                    if (now >= maghribMinus && now < pt.maghrib) isMakrooh = true;
                 }
                 
                 $('makroohWarning').style.display = isMakrooh ? 'block' : 'none';
@@ -1262,6 +1264,8 @@
         dom.schoolSelect.value = state.school;
         dom.timeFormat24.checked = state.use24h;
         if ($('hijriAdjustment')) $('hijriAdjustment').value = state.hijriOffset.toString();
+        if ($('ishraqOffset')) $('ishraqOffset').value = state.ishraqOffset.toString();
+        if ($('makroohOffset')) $('makroohOffset').value = state.makroohOffset.toString();
         
         $('notifyFajr').checked = state.notifyPrefs.fajr;
         $('notifyDhuhr').checked = state.notifyPrefs.dhuhr;
@@ -1314,6 +1318,14 @@
         if ($('hijriAdjustment')) {
             state.hijriOffset = parseInt($('hijriAdjustment').value);
             localStorage.setItem('pt_hijri_adj', state.hijriOffset);
+        }
+        if ($('ishraqOffset')) {
+            state.ishraqOffset = parseInt($('ishraqOffset').value) || 15;
+            localStorage.setItem('pt_ishraq_offset', state.ishraqOffset);
+        }
+        if ($('makroohOffset')) {
+            state.makroohOffset = parseInt($('makroohOffset').value) || 10;
+            localStorage.setItem('pt_makrooh_offset', state.makroohOffset);
         }
         
         state.hijriCalData = null;
