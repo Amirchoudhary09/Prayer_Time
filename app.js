@@ -1416,49 +1416,54 @@
 
     // ─── Event Bindings ───
     function bindEvents() {
-        // Calendar button → open calendar modal
-        $('calendarBtn').addEventListener('click', openCalendarModal);
-        $('closeCalendarBtn').addEventListener('click', closeCalendarModal);
-        dom.calendarModal.addEventListener('click', (e) => {
+        // Helper: safely bind event — skip if element not found
+        function on(id, event, handler) {
+            const el = typeof id === 'string' ? $(id) : id;
+            if (el) el.addEventListener(event, handler);
+        }
+
+        // Calendar
+        on('calendarBtn', 'click', openCalendarModal);
+        on('closeCalendarBtn', 'click', closeCalendarModal);
+        if (dom.calendarModal) dom.calendarModal.addEventListener('click', (e) => {
             if (e.target === dom.calendarModal) closeCalendarModal();
         });
 
         // Language toggle
-        dom.calLangToggle.addEventListener('click', toggleCalendarLang);
+        if (dom.calLangToggle) dom.calLangToggle.addEventListener('click', toggleCalendarLang);
 
         // Location button
-        $('locationBtn').addEventListener('click', () => { detectLocation(); });
+        on('locationBtn', 'click', () => detectLocation());
 
         // Settings
-        $('settingsBtn').addEventListener('click', openSettingsModal);
-        $('closeSettingsBtn').addEventListener('click', closeSettingsModal);
-        $('saveSettingsBtn').addEventListener('click', saveSettings);
-        dom.settingsModal.addEventListener('click', (e) => {
+        on('settingsBtn', 'click', openSettingsModal);
+        on('closeSettingsBtn', 'click', closeSettingsModal);
+        on('saveSettingsBtn', 'click', saveSettings);
+        if (dom.settingsModal) dom.settingsModal.addEventListener('click', (e) => {
             if (e.target === dom.settingsModal) closeSettingsModal();
         });
 
-        // Notify Select All logic
-        if ($('notifySelectAllBtn')) {
-            $('notifySelectAllBtn').addEventListener('click', () => {
-                const checkboxes = dom.settingsModal.querySelectorAll('.setting-checkbox');
-                let allChecked = Array.from(checkboxes).every(cb => cb.checked);
-                checkboxes.forEach(cb => cb.checked = !allChecked);
-                $('notifySelectAllBtn').textContent = !allChecked ? 'Disable All' : 'Enable All';
-            });
-        }
+        // Notify Select All
+        on('notifySelectAllBtn', 'click', () => {
+            const checkboxes = dom.settingsModal ? dom.settingsModal.querySelectorAll('.setting-checkbox') : [];
+            let allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            checkboxes.forEach(cb => cb.checked = !allChecked);
+            const btn = $('notifySelectAllBtn');
+            if (btn) btn.textContent = !allChecked ? 'Disable All' : 'Enable All';
+        });
 
         // Date prayer modal close
-        $('closeDateModalBtn').addEventListener('click', closeDateModal);
-        dom.datePrayerModal.addEventListener('click', (e) => {
+        on('closeDateModalBtn', 'click', closeDateModal);
+        if (dom.datePrayerModal) dom.datePrayerModal.addEventListener('click', (e) => {
             if (e.target === dom.datePrayerModal) closeDateModal();
         });
 
         // City search
-        $('searchCityBtn').addEventListener('click', () => {
-            const city = dom.manualCity.value.trim();
+        on('searchCityBtn', 'click', () => {
+            const city = dom.manualCity ? dom.manualCity.value.trim() : '';
             if (city) { searchCity(city); closeSettingsModal(); }
         });
-        dom.manualCity.addEventListener('keydown', (e) => {
+        if (dom.manualCity) dom.manualCity.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const city = dom.manualCity.value.trim();
                 if (city) { searchCity(city); closeSettingsModal(); }
@@ -1466,7 +1471,7 @@
         });
 
         // Month navigation
-        $('prevMonthBtn').addEventListener('click', () => {
+        on('prevMonthBtn', 'click', () => {
             if (state.calMode === 'english') {
                 state.calMonth--;
                 if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
@@ -1477,8 +1482,7 @@
             }
             renderCalendar();
         });
-
-        $('nextMonthBtn').addEventListener('click', () => {
+        on('nextMonthBtn', 'click', () => {
             if (state.calMode === 'english') {
                 state.calMonth++;
                 if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
@@ -1489,13 +1493,13 @@
             }
             renderCalendar();
         });
-        
-        // Inline Edit Time Modal Logic
+
+        // Prayer card & secondary time click → edit time modal
         document.querySelectorAll('.prayer-card, .sec-time-item').forEach(card => {
-            const prayerKey = card.getAttribute('data-prayer') || (card.id === 'card-sunrise' ? 'sunrise' : null) || card.getAttribute('data-sec');
+            const prayerKey = card.getAttribute('data-prayer') || card.getAttribute('data-sec');
             if (prayerKey) {
                 card.style.cursor = 'pointer';
-                card.title = 'Click to edit time';
+                card.title = 'Click to set time';
                 card.addEventListener('click', (e) => {
                     e.stopPropagation();
                     openEditTimeModal(prayerKey);
@@ -1503,156 +1507,119 @@
             }
         });
 
-        $('closeEditTimeBtn').addEventListener('click', closeEditTimeModal);
-        $('editTimeModal').addEventListener('click', (e) => {
-            if (e.target === $('editTimeModal')) closeEditTimeModal();
-        });
-
-        $('saveTimeBtn').addEventListener('click', () => {
+        // Edit Time Modal (single prayer pencil popup)
+        on('closeEditTimeBtn', 'click', closeEditTimeModal);
+        on('editTimeModal', 'click', (e) => { if (e.target === $('editTimeModal')) closeEditTimeModal(); });
+        on('saveTimeBtn', 'click', () => {
             if (currentEditingPrayer) {
                 state.jamaatTimes[currentEditingPrayer] = $('editTimeInput').value;
                 localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
-                updatePrayerCards();
-                startCountdown();
-                closeEditTimeModal();
-                showToast('✅ Jamaat time updated');
+                updatePrayerCards(); startCountdown(); closeEditTimeModal();
+                showToast('✅ Time updated!');
             }
         });
-
-        $('resetTimeBtn').addEventListener('click', () => {
+        on('resetTimeBtn', 'click', () => {
             if (currentEditingPrayer) {
                 state.jamaatTimes[currentEditingPrayer] = '';
                 localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
-                updatePrayerCards();
-                startCountdown();
-                closeEditTimeModal();
-                showToast('🔄 Reset to default time');
+                updatePrayerCards(); startCountdown(); closeEditTimeModal();
+                showToast('🔄 Reset to default');
             }
         });
 
-        $('jamaatTimeBadge').addEventListener('click', (e) => {
-            e.stopPropagation();
-            if (state._nextPrayer) openEditTimeModal(state._nextPrayer);
-        });
+        // Compass
+        on('enableCompassBtn', 'click', initDeviceCompass);
 
-        // Compass enable
-        $('enableCompassBtn').addEventListener('click', initDeviceCompass);
-        
-        // Next Prayer Hero Card Click
-        $('heroCard').addEventListener('click', () => {
+        // Hero card
+        on('heroCard', 'click', () => {
             const today = new Date();
-            const dateStr = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
-            openDatePrayerModal(dateStr);
+            openDatePrayerModal(`${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`);
         });
 
         // Theme Toggle
-        $('themeToggleBtn').addEventListener('click', toggleTheme);
+        on('themeToggleBtn', 'click', toggleTheme);
 
         // Location Manager Modal
-        $('closeLocManagerBtn').addEventListener('click', closeLocManagerModal);
-        $('locationManagerModal').addEventListener('click', (e) => {
-            if (e.target === $('locationManagerModal')) closeLocManagerModal();
+        on('closeLocManagerBtn', 'click', closeLocManagerModal);
+        on('locationManagerModal', 'click', (e) => { if (e.target === $('locationManagerModal')) closeLocManagerModal(); });
+        on('locManagerSearchBtn', 'click', () => {
+            const city = $('locManagerSearchInput') ? $('locManagerSearchInput').value.trim() : '';
+            if (city) { searchCity(city); closeLocManagerModal(); $('locManagerSearchInput').value = ''; }
         });
-        $('locManagerSearchBtn').addEventListener('click', () => {
-            const city = $('locManagerSearchInput').value.trim();
-            if (city) {
-                searchCity(city);
-                closeLocManagerModal();
-                $('locManagerSearchInput').value = '';
-            }
-        });
-        $('locManagerSearchInput').addEventListener('keydown', (e) => {
+        on('locManagerSearchInput', 'keydown', (e) => {
             if (e.key === 'Enter') {
                 const city = $('locManagerSearchInput').value.trim();
-                if (city) {
-                    searchCity(city);
-                    closeLocManagerModal();
-                    $('locManagerSearchInput').value = '';
-                }
+                if (city) { searchCity(city); closeLocManagerModal(); $('locManagerSearchInput').value = ''; }
             }
         });
 
         // Location Display Long Press & Click
         const locWrapper = $('locationDisplayWrapper');
         const locMenu = $('locationContextMenu');
-        
-        locWrapper.addEventListener('pointerdown', (e) => {
-            if (e.target.closest('.location-context-menu')) return; // ignore clicks inside menu
-            state.longPressTimer = setTimeout(() => {
-                locMenu.style.display = 'flex';
-                state.longPressTimer = null;
-            }, 800); // 800ms hold
-        });
-
-        locWrapper.addEventListener('pointerup', (e) => {
-            if (e.target.closest('.location-context-menu')) return;
-            if (state.longPressTimer) {
-                // Short click
-                clearTimeout(state.longPressTimer);
-                openLocManagerModal();
-            }
-        });
-
-        locWrapper.addEventListener('pointerleave', () => {
-            if (state.longPressTimer) clearTimeout(state.longPressTimer);
-        });
+        if (locWrapper && locMenu) {
+            locWrapper.addEventListener('pointerdown', (e) => {
+                if (e.target.closest('.location-context-menu')) return;
+                state.longPressTimer = setTimeout(() => {
+                    locMenu.style.display = 'flex';
+                    state.longPressTimer = null;
+                }, 800);
+            });
+            locWrapper.addEventListener('pointerup', (e) => {
+                if (e.target.closest('.location-context-menu')) return;
+                if (state.longPressTimer) {
+                    clearTimeout(state.longPressTimer);
+                    openLocManagerModal();
+                }
+            });
+            locWrapper.addEventListener('pointerleave', () => {
+                if (state.longPressTimer) clearTimeout(state.longPressTimer);
+            });
+        }
 
         // Context Menu Buttons
-        $('cancelLocationBtn').addEventListener('click', (e) => {
+        on('cancelLocationBtn', 'click', (e) => { e.stopPropagation(); if(locMenu) locMenu.style.display = 'none'; });
+        on('deleteLocationBtn', 'click', (e) => {
             e.stopPropagation();
-            locMenu.style.display = 'none';
-        });
-
-        $('deleteLocationBtn').addEventListener('click', (e) => {
-            e.stopPropagation();
-            locMenu.style.display = 'none';
+            if(locMenu) locMenu.style.display = 'none';
             deleteLocation(state.city);
             showToast('🗑️ Location deleted');
         });
-
-        // Hide context menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!locWrapper.contains(e.target)) {
+            if (locWrapper && !locWrapper.contains(e.target) && locMenu) {
                 locMenu.style.display = 'none';
             }
         });
 
-        // Jamaat Quick Edit Modal
-        $('jamaatTimeBadge').addEventListener('click', (e) => {
-            e.stopPropagation(); // prevent hero card click
-            
-            // Load current offsets into quick edit modal
-            $('quickOffsetFajr').value = state.jamaatTimes.fajr || '';
-            $('quickOffsetDhuhr').value = state.jamaatTimes.dhuhr || '';
-            $('quickOffsetAsr').value = state.jamaatTimes.asr || '';
-            $('quickOffsetMaghrib').value = state.jamaatTimes.maghrib || '';
-            $('quickOffsetIsha').value = state.jamaatTimes.isha || '';
-            
-            $('jamaatEditModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
+        // Jamaat Badge → open jamaatEditModal (all 5 prayers at once)
+        on('jamaatTimeBadge', 'click', (e) => {
+            e.stopPropagation();
+            if ($('quickOffsetFajr')) $('quickOffsetFajr').value = state.jamaatTimes.fajr || '';
+            if ($('quickOffsetDhuhr')) $('quickOffsetDhuhr').value = state.jamaatTimes.dhuhr || '';
+            if ($('quickOffsetAsr')) $('quickOffsetAsr').value = state.jamaatTimes.asr || '';
+            if ($('quickOffsetMaghrib')) $('quickOffsetMaghrib').value = state.jamaatTimes.maghrib || '';
+            if ($('quickOffsetIsha')) $('quickOffsetIsha').value = state.jamaatTimes.isha || '';
+            const modal = $('jamaatEditModal');
+            if (modal) { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
         });
 
         function closeJamaatModal() {
-            $('jamaatEditModal').classList.remove('active');
+            const modal = $('jamaatEditModal');
+            if (modal) modal.classList.remove('active');
             document.body.style.overflow = '';
         }
 
-        $('closeJamaatEditBtn').addEventListener('click', closeJamaatModal);
-        $('jamaatEditModal').addEventListener('click', (e) => {
-            if (e.target === $('jamaatEditModal')) closeJamaatModal();
-        });
-
-        $('saveJamaatEditBtn').addEventListener('click', () => {
+        on('closeJamaatEditBtn', 'click', closeJamaatModal);
+        on('jamaatEditModal', 'click', (e) => { if (e.target === $('jamaatEditModal')) closeJamaatModal(); });
+        on('saveJamaatEditBtn', 'click', () => {
             state.jamaatTimes = {
-                fajr: $('quickOffsetFajr').value || "",
-                dhuhr: $('quickOffsetDhuhr').value || "",
-                asr: $('quickOffsetAsr').value || "",
-                maghrib: $('quickOffsetMaghrib').value || "",
-                isha: $('quickOffsetIsha').value || ""
+                ...state.jamaatTimes,
+                fajr: ($('quickOffsetFajr') || {}).value || "",
+                dhuhr: ($('quickOffsetDhuhr') || {}).value || "",
+                asr: ($('quickOffsetAsr') || {}).value || "",
+                maghrib: ($('quickOffsetMaghrib') || {}).value || "",
+                isha: ($('quickOffsetIsha') || {}).value || ""
             };
             localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
-            
-            // update main settings modal inputs to keep in sync
             if (dom.offsetFajr) {
                 dom.offsetFajr.value = state.jamaatTimes.fajr;
                 dom.offsetDhuhr.value = state.jamaatTimes.dhuhr;
@@ -1660,21 +1627,17 @@
                 dom.offsetMaghrib.value = state.jamaatTimes.maghrib;
                 dom.offsetIsha.value = state.jamaatTimes.isha;
             }
-
             closeJamaatModal();
             updatePrayerCards();
-            showToast('✅ Jamaat offsets saved!');
+            showToast('✅ Jamaat times saved!');
         });
 
-        // Escape key
+        // Escape key closes all modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                closeSettingsModal();
-                closeDateModal();
-                closeCalendarModal();
-                closeLocManagerModal();
-                closeJamaatModal();
-                locMenu.style.display = 'none';
+                closeSettingsModal(); closeDateModal(); closeCalendarModal();
+                closeLocManagerModal(); closeJamaatModal(); closeEditTimeModal();
+                if (locMenu) locMenu.style.display = 'none';
             }
         });
     }
