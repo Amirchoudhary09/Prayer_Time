@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Beautiful Muslim Prayer Times App - Get accurate Salah timings based on your location with Qibla direction, Hijri calendar, and countdown timer.">
+    <title>🕌 Prayer Times - Salah Timings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="bg-gradient" id="bgGradient"></div>
+    <div class="stars" id="stars"></div>
+    <div class="mosque-silhouette" id="mosqueSilhouette">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+            <!-- Mosque Skyline SVG -->
+            <path d="M0,320 L0,280 Q30,275 60,280 L60,250 Q60,220 80,210 Q100,200 100,170 Q100,140 120,130 Q140,120 140,100 Q140,80 155,70 Q170,60 170,45 Q170,30 180,25 Q190,20 195,15 L200,5 L205,15 Q210,20 220,25 Q230,30 230,45 Q230,60 245,70 Q260,80 260,100 Q260,120 280,130 Q300,140 300,170 Q300,200 320,210 Q340,220 340,250 L340,280 Q370,275 400,280 L400,260 L410,240 L420,260 L420,280 Q500,270 580,280 L580,250 Q580,230 600,220 Q620,210 620,190 Q620,170 635,160 Q650,150 650,130 Q650,110 665,100 Q680,90 680,75 Q680,55 695,45 Q710,35 710,20 L715,5 L720,20 Q720,35 735,45 Q750,55 750,75 Q750,90 765,100 Q780,110 780,130 Q780,150 795,160 Q810,170 810,190 Q810,210 830,220 Q850,230 850,250 L850,280 Q900,270 950,280 L950,260 Q950,245 965,240 Q975,235 980,220 L985,210 L990,220 Q995,235 1005,240 Q1015,245 1015,260 L1015,280 Q1060,275 1100,280 L1100,265 L1105,250 L1110,265 L1110,280 Q1170,270 1230,280 L1230,260 Q1230,240 1250,230 Q1270,220 1270,200 Q1270,180 1290,170 Q1310,160 1310,140 Q1310,120 1325,110 Q1340,100 1340,80 L1345,60 L1350,80 Q1350,100 1365,110 Q1380,120 1380,140 Q1380,160 1400,170 Q1420,180 1420,200 Q1420,220 1440,230 L1440,280 L1440,320 Z" fill="currentColor"/>
+        </svg>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header" id="appHeader">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="crescent-icon">☪</div>
+                    <div class="header-text">
+                        <h1 id="appTitle">Prayer Times</h1>
+                        <p class="arabic-subtitle" id="arabicSubtitle">أوقات الصلاة</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" id="themeToggleBtn" title="Toggle Theme" aria-label="Toggle Theme">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    </button>
+                    <button class="icon-btn" id="calendarBtn" title="Calendar" aria-label="Open Calendar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><rect x="7" y="14" width="3" height="3" rx="0.5" fill="currentColor" stroke="none"/></svg>
+                    </button>
+                    <button class="icon-btn" id="locationBtn" title="Detect Location" aria-label="Detect Location">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="8"/></svg>
+                    </button>
+                    <button class="icon-btn" id="settingsBtn" title="Settings" aria-label="Settings">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Location & Date Bar -->
+        <section class="info-bar" id="infoBar">
+            <div class="location-display-wrapper" id="locationDisplayWrapper" style="position: relative; cursor: pointer;" title="Hold to delete, Click to change">
+                <div class="location-display" id="locationDisplay">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span id="cityName">Detecting location...</span>
+                </div>
+                
+                <!-- Long Press Context Menu -->
+                <div class="location-context-menu" id="locationContextMenu" style="display: none;">
+                    <button id="deleteLocationBtn" class="context-btn danger-btn">🗑️ Delete Location</button>
+                    <button id="cancelLocationBtn" class="context-btn">Cancel</button>
+                </div>
+            </div>
+            <div class="date-display">
+                <div class="hijri-date" id="hijriDate">Loading...</div>
+                <div class="gregorian-date" id="gregorianDate">Loading...</div>
+            </div>
+        </section>
+
+        <!-- Current Prayer / Next Prayer Hero -->
+        <section class="hero-section" id="heroSection">
+            <div class="hero-card glass-card" id="heroCard" style="cursor: pointer;" title="Click to view all today's times">
+                <div class="jamaat-time-badge" id="jamaatTimeBadge" style="display: none; cursor: pointer;" title="Click to edit Jamaat times">
+                    <span class="jamaat-label">Jamaat:</span>
+                    <span class="jamaat-value" id="jamaatTimeValue">--:--</span>
+                    <span class="edit-icon" style="margin-left:4px; opacity:0.7;">✏️</span>
+                </div>
+                <div class="hero-glow"></div>
+                <div class="current-prayer-label" id="currentPrayerLabel">Next Prayer</div>
+                <div class="current-prayer-name" id="currentPrayerName">
+                    <span class="prayer-arabic" id="prayerArabic">--</span>
+                    <span class="prayer-english" id="prayerEnglish">Loading...</span>
+                </div>
+                <div class="countdown-timer" id="countdownTimer">
+                    <div class="timer-segment">
+                        <span class="timer-value" id="hoursValue">00</span>
+                        <span class="timer-label">Hours</span>
+                    </div>
+                    <div class="timer-separator">:</div>
+                    <div class="timer-segment">
+                        <span class="timer-value" id="minutesValue">00</span>
+                        <span class="timer-label">Minutes</span>
+                    </div>
+                    <div class="timer-separator">:</div>
+                    <div class="timer-segment">
+                        <span class="timer-value" id="secondsValue">00</span>
+                        <span class="timer-label">Seconds</span>
+                    </div>
+                </div>
+                <div class="prayer-time-display" id="prayerTimeDisplay">--:--</div>
+            </div>
+        </section>
+
+        <!-- Prayer Times Grid -->
+        <section class="prayer-times-section" id="prayerTimesSection">
+            <h2 class="section-title">
+                <span>Today's Prayer Times</span>
+                <span class="section-line"></span>
+            </h2>
+            <div class="prayer-cards-grid" id="prayerCardsGrid">
+                <!-- Fajr -->
+                <div class="prayer-card glass-card" data-prayer="fajr" id="card-fajr">
+                    <div class="prayer-card-icon">🌅</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Fajr</div>
+                        <div class="prayer-card-arabic">الفجر</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-fajr">--:--</div>
+                    <div class="prayer-card-status" id="status-fajr"></div>
+                </div>
+                <!-- Sunrise -->
+                <div class="prayer-card glass-card" data-prayer="sunrise" id="card-sunrise">
+                    <div class="prayer-card-icon">☀️</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Sunrise</div>
+                        <div class="prayer-card-arabic">الشروق</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-sunrise">--:--</div>
+                    <div class="prayer-card-status" id="status-sunrise"></div>
+                </div>
+                <!-- Dhuhr -->
+                <div class="prayer-card glass-card" data-prayer="dhuhr" id="card-dhuhr">
+                    <div class="prayer-card-icon">🌤️</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Dhuhr</div>
+                        <div class="prayer-card-arabic">الظهر</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-dhuhr">--:--</div>
+                    <div class="prayer-card-status" id="status-dhuhr"></div>
+                </div>
+                <!-- Asr -->
+                <div class="prayer-card glass-card" data-prayer="asr" id="card-asr">
+                    <div class="prayer-card-icon">🌇</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Asr</div>
+                        <div class="prayer-card-arabic">العصر</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-asr">--:--</div>
+                    <div class="prayer-card-status" id="status-asr"></div>
+                </div>
+                <!-- Maghrib -->
+                <div class="prayer-card glass-card" data-prayer="maghrib" id="card-maghrib">
+                    <div class="prayer-card-icon">🌆</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Maghrib</div>
+                        <div class="prayer-card-arabic">المغرب</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-maghrib">--:--</div>
+                    <div class="prayer-card-status" id="status-maghrib"></div>
+                </div>
+                <!-- Isha -->
+                <div class="prayer-card glass-card" data-prayer="isha" id="card-isha">
+                    <div class="prayer-card-icon">🌙</div>
+                    <div class="prayer-card-info">
+                        <div class="prayer-card-name">Isha</div>
+                        <div class="prayer-card-arabic">العشاء</div>
+                    </div>
+                    <div class="prayer-card-time" id="time-isha">--:--</div>
+                    <div class="prayer-card-status" id="status-isha"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Qibla Direction -->
+        <section class="qibla-section" id="qiblaSection">
+            <h2 class="section-title">
+                <span>Qibla Direction</span>
+                <span class="section-line"></span>
+            </h2>
+            <div class="qibla-card glass-card">
+                <div class="qibla-compass" id="qiblaCompass">
+                    <div class="compass-ring">
+                        <div class="compass-direction compass-n">N</div>
+                        <div class="compass-direction compass-e">E</div>
+                        <div class="compass-direction compass-s">S</div>
+                        <div class="compass-direction compass-w">W</div>
+                        <div class="compass-needle" id="compassNeedle">
+                            <div class="needle-head">🕋</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="qibla-info">
+                    <div class="qibla-degrees" id="qiblaDegrees">--°</div>
+                    <div class="qibla-label">from North</div>
+                    <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;">Enable Device Compass</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Calendar Modal -->
+        <div class="modal-overlay" id="calendarModal">
+            <div class="modal glass-card calendar-modal">
+                <div class="cal-top-bar">
+                    <button class="cal-lang-toggle" id="calLangToggle">
+                        <span class="lang-icon">🌐</span>
+                        <span class="lang-text" id="calLangText">اردو</span>
+                    </button>
+                    <h2 class="cal-modal-title" id="calModalTitle">📅 Prayer Calendar</h2>
+                    <button class="modal-close" id="closeCalendarBtn" aria-label="Close Calendar">&times;</button>
+                </div>
+                <div class="cal-header">
+                    <button class="month-nav-btn" id="prevMonthBtn" aria-label="Previous Month">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                    </button>
+                    <div class="cal-month-year">
+                        <span class="cal-month" id="calMonthName">May</span>
+                        <span class="cal-year" id="calYear">2026</span>
+                    </div>
+                    <button class="month-nav-btn" id="nextMonthBtn" aria-label="Next Month">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                </div>
+                <div class="cal-weekdays" id="calWeekdays">
+                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                </div>
+                <div class="cal-days" id="calDays">
+                    <!-- Filled by JS -->
+                </div>
+                <div class="cal-hint" id="calHint">👆 Tap any date to see prayer times</div>
+            </div>
+        </div>
+
+        <!-- Date Prayer Times Popup Modal -->
+        <div class="modal-overlay" id="datePrayerModal">
+            <div class="modal glass-card date-prayer-modal" id="datePrayerModalContent">
+                <div class="modal-header">
+                    <div class="date-modal-title">
+                        <span class="date-modal-icon">🕌</span>
+                        <div>
+                            <h2 id="dateModalTitle">Prayer Times</h2>
+                            <p class="date-modal-subtitle" id="dateModalSubtitle">--</p>
+                        </div>
+                    </div>
+                    <button class="modal-close" id="closeDateModalBtn" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body date-prayer-body">
+                    <div class="date-prayer-list" id="datePrayerList">
+                        <!-- Fajr -->
+                        <div class="date-prayer-item" id="dp-fajr">
+                            <div class="dp-icon">🌅</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Fajr</span>
+                                <span class="dp-arabic">الفجر</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-fajr">--:--</div>
+                        </div>
+                        <!-- Sunrise -->
+                        <div class="date-prayer-item" id="dp-sunrise">
+                            <div class="dp-icon">☀️</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Sunrise</span>
+                                <span class="dp-arabic">الشروق</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-sunrise">--:--</div>
+                        </div>
+                        <!-- Dhuhr -->
+                        <div class="date-prayer-item" id="dp-dhuhr">
+                            <div class="dp-icon">🌤️</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Dhuhr</span>
+                                <span class="dp-arabic">الظهر</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-dhuhr">--:--</div>
+                        </div>
+                        <!-- Asr -->
+                        <div class="date-prayer-item" id="dp-asr">
+                            <div class="dp-icon">🌇</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Asr</span>
+                                <span class="dp-arabic">العصر</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-asr">--:--</div>
+                        </div>
+                        <!-- Maghrib -->
+                        <div class="date-prayer-item" id="dp-maghrib">
+                            <div class="dp-icon">🌆</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Maghrib</span>
+                                <span class="dp-arabic">المغرب</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-maghrib">--:--</div>
+                        </div>
+                        <!-- Isha -->
+                        <div class="date-prayer-item" id="dp-isha">
+                            <div class="dp-icon">🌙</div>
+                            <div class="dp-info">
+                                <span class="dp-name">Isha</span>
+                                <span class="dp-arabic">العشاء</span>
+                            </div>
+                            <div class="dp-time" id="dp-time-isha">--:--</div>
+                        </div>
+                    </div>
+                    <div class="dp-hijri-row" id="dpHijriRow">
+                        <span class="dp-hijri-label">Hijri Date:</span>
+                        <span class="dp-hijri-value" id="dpHijriValue">--</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Location Manager Modal -->
+        <div class="modal-overlay" id="locationManagerModal">
+            <div class="modal glass-card">
+                <div class="modal-header">
+                    <h2>Location Manager</h2>
+                    <button class="modal-close" id="closeLocManagerBtn" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label class="setting-label">Search New Location</label>
+                        <input type="text" id="locManagerSearchInput" class="setting-input" placeholder="e.g. Mumbai, Delhi, London...">
+                        <button class="setting-btn" id="locManagerSearchBtn">Search</button>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Saved Locations</label>
+                        <div id="savedLocationsList" class="saved-locations-list" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jamaat Quick Edit Modal -->
+        <div class="modal-overlay" id="jamaatEditModal">
+            <div class="modal glass-card">
+                <div class="modal-header">
+                    <h2>Edit Jamaat Offsets</h2>
+                    <button class="modal-close" id="closeJamaatEditBtn" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Add or subtract minutes from the default prayer time for your local Masjid Jamaat.</p>
+                    <div class="offset-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-primary); font-weight:600;">Fajr Jamaat</label>
+                            <input type="time" id="quickOffsetFajr" class="setting-input">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-primary); font-weight:600;">Dhuhr Jamaat</label>
+                            <input type="time" id="quickOffsetDhuhr" class="setting-input">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-primary); font-weight:600;">Asr Jamaat</label>
+                            <input type="time" id="quickOffsetAsr" class="setting-input">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-primary); font-weight:600;">Maghrib Jamaat</label>
+                            <input type="time" id="quickOffsetMaghrib" class="setting-input">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; color: var(--text-primary); font-weight:600;">Isha Jamaat</label>
+                            <input type="time" id="quickOffsetIsha" class="setting-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="saveJamaatEditBtn">Save Jamaat Times</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div class="modal-overlay" id="settingsModal">
+            <div class="modal glass-card" id="settingsModalContent">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="modal-close" id="closeSettingsBtn" aria-label="Close Settings">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-group">
+                        <label class="setting-label" for="calcMethod">Calculation Method</label>
+                        <select id="calcMethod" class="setting-select">
+                            <option value="2">Islamic Society of North America (ISNA)</option>
+                            <option value="1">University of Islamic Sciences, Karachi</option>
+                            <option value="3">Muslim World League</option>
+                            <option value="4">Umm Al-Qura University, Makkah</option>
+                            <option value="5">Egyptian General Authority of Survey</option>
+                            <option value="7">Institute of Geophysics, University of Tehran</option>
+                            <option value="8">Gulf Region</option>
+                            <option value="9">Kuwait</option>
+                            <option value="10">Qatar</option>
+                            <option value="11">Majlis Ugama Islam Singapura</option>
+                            <option value="12">Union Organization Islamic de France</option>
+                            <option value="13">Diyanet İşleri Başkanlığı, Turkey</option>
+                            <option value="14">Spiritual Administration of Muslims of Russia</option>
+                            <option value="15">Moonsighting Committee Worldwide</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label" for="schoolSelect">Juristic School (Asr)</label>
+                        <select id="schoolSelect" class="setting-select">
+                            <option value="0">Shafi'i / Maliki / Hanbali</option>
+                            <option value="1">Hanafi</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label" for="manualCity">Manual City Search</label>
+                        <input type="text" id="manualCity" class="setting-input" placeholder="e.g. Mumbai, Delhi, Karachi...">
+                        <button class="setting-btn" id="searchCityBtn">Search City</button>
+                    </div>
+                    <div class="setting-group" style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 15px;">
+                        <label class="setting-label" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+                            Notification Preferences
+                            <button id="notifySelectAllBtn" class="setting-btn" style="padding: 3px 8px; font-size: 0.7rem; min-width: auto; background: rgba(255,255,255,0.1); border-radius: 4px;">Enable All</button>
+                        </label>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyFajr" class="setting-checkbox"> Fajr
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyDhuhr" class="setting-checkbox"> Dhuhr
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyAsr" class="setting-checkbox"> Asr
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyMaghrib" class="setting-checkbox"> Maghrib
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 0.9rem;">
+                                <input type="checkbox" id="notifyIsha" class="setting-checkbox"> Isha
+                            </label>
+                        </div>
+                        
+                        <label class="setting-label" for="notifySound" style="font-size: 0.85rem;">Notification Sound</label>
+                        <select id="notifySound" class="setting-select" style="margin-bottom: 0;">
+                            <option value="system">System Default</option>
+                            <option value="beep">Short Beep</option>
+                            <option value="adhan">Adhan (Makkah)</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Manual Prayer Time Offsets (Jamaat Time)</label>
+                        <div class="offset-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted);">Fajr Offset</label>
+                                <input type="time" id="offsetFajr" class="setting-input">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted);">Dhuhr Offset</label>
+                                <input type="time" id="offsetDhuhr" class="setting-input">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted);">Asr Offset</label>
+                                <input type="time" id="offsetAsr" class="setting-input">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted);">Maghrib Offset</label>
+                                <input type="time" id="offsetMaghrib" class="setting-input">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.75rem; color: var(--text-muted);">Isha Offset</label>
+                                <input type="time" id="offsetIsha" class="setting-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">
+                            <input type="checkbox" id="timeFormat24" class="setting-checkbox"> 
+                            Use 24-hour format
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-primary" id="saveSettingsBtn">Save & Apply</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer" id="appFooter">
+            <div class="daily-motivation" id="dailyMotivation" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                <p class="footer-dua" id="dailyDuaAr" style="margin: 0 0 8px 0;">رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنتَ السَّمِيعُ الْعَلِيمُ</p>
+                <p class="footer-translation" id="dailyDuaEn">"Our Lord, accept from us. Indeed You are the Hearing, the Knowing."</p>
+            </div>
+            <p><strong>&copy; <span id="currentYear">2026</span> Choudhary All Rights Reserved</strong></p>
+        </footer>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span class="toast-icon">✅</span>
+        <span class="toast-message" id="toastMessage"></span>
+    </div>
+
+    <audio id="notificationAudio" preload="auto"></audio>
+    <script src="app.js"></script>
+</body>
+</html>
