@@ -1344,6 +1344,23 @@
         document.body.style.overflow = '';
     }
 
+    // ─── Inline Edit Time ───
+    let currentEditingPrayer = null;
+    function openEditTimeModal(prayerKey) {
+        currentEditingPrayer = prayerKey;
+        const info = PRAYER_NAMES[prayerKey];
+        $('editTimeTitle').textContent = `Set Jamaat: ${state.appLang === 'hi' ? info.hi : info.en}`;
+        $('editTimeInput').value = state.jamaatTimes[prayerKey] || '';
+        $('editTimeModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeEditTimeModal() {
+        $('editTimeModal').classList.remove('active');
+        document.body.style.overflow = '';
+        currentEditingPrayer = null;
+    }
+
     // ─── Toast ───
     function showToast(message) {
         dom.toastMessage.textContent = message;
@@ -1417,6 +1434,49 @@
             renderCalendar();
         });
         
+        // Inline Edit Time Modal Logic
+        document.querySelectorAll('.prayer-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.title = 'Click to edit Jamaat time';
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const prayerKey = card.getAttribute('data-prayer');
+                if (prayerKey) openEditTimeModal(prayerKey);
+            });
+        });
+
+        $('closeEditTimeBtn').addEventListener('click', closeEditTimeModal);
+        $('editTimeModal').addEventListener('click', (e) => {
+            if (e.target === $('editTimeModal')) closeEditTimeModal();
+        });
+
+        $('saveTimeBtn').addEventListener('click', () => {
+            if (currentEditingPrayer) {
+                state.jamaatTimes[currentEditingPrayer] = $('editTimeInput').value;
+                localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
+                updatePrayerCards();
+                startCountdown();
+                closeEditTimeModal();
+                showToast('✅ Jamaat time updated');
+            }
+        });
+
+        $('resetTimeBtn').addEventListener('click', () => {
+            if (currentEditingPrayer) {
+                state.jamaatTimes[currentEditingPrayer] = '';
+                localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
+                updatePrayerCards();
+                startCountdown();
+                closeEditTimeModal();
+                showToast('🔄 Reset to default time');
+            }
+        });
+
+        $('jamaatTimeBadge').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state._nextPrayer) openEditTimeModal(state._nextPrayer);
+        });
+
         // Compass enable
         $('enableCompassBtn').addEventListener('click', initDeviceCompass);
         
