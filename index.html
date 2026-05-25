@@ -479,8 +479,11 @@
                     </div>
                     <div class="setting-group">
                         <label class="setting-label" data-i18n="manualCityTitle">Manual City Search</label>
-                        <input type="text" id="manualCity" class="setting-input" placeholder="e.g. Mumbai, Delhi, Karachi...">
-                        <button class="setting-btn" id="searchCityBtn">Search City</button>
+                        <div style="position: relative;">
+                            <input type="text" id="manualCity" class="setting-input" placeholder="e.g. Delhi, Karachi, London..." autocomplete="off" style="width:100%;">
+                            <div id="cityAutocomplete" style="display:none; position:absolute; top:100%; left:0; right:0; background:var(--glass-bg,rgba(20,40,35,0.97)); border:1px solid rgba(255,255,255,0.15); border-radius:0 0 10px 10px; z-index:999; max-height:220px; overflow-y:auto; box-shadow:0 8px 24px rgba(0,0,0,0.4);"></div>
+                        </div>
+                        <button class="setting-btn" id="searchCityBtn" style="margin-top:8px;" data-i18n="searchCityBtn">Search City</button>
                     </div>
                     <div class="setting-group" style="background: rgba(0,0,0,0.1); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 15px;">
                         <label class="setting-label" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">

@@ -7,30 +7,68 @@
 (function () {
     'use strict';
 
-    // ─── UI Translater ───
+    // ─── UI Translator ───
     function applyLanguage() {
         const lang = state.appLang;
-        const dict = TRANSLATIONS[lang];
-        
+        const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+
+        // RTL languages
+        const rtlLangs = ['ar', 'ur'];
+        document.documentElement.dir = rtlLangs.includes(lang) ? 'rtl' : 'ltr';
+        document.documentElement.lang = lang;
+
         // Translate all data-i18n elements
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
-            if (dict[key]) {
-                el.textContent = dict[key];
-            }
+            if (dict[key]) el.textContent = dict[key];
         });
-        
-        // Translate prayer names in cards
+
+        // Prayer names in main cards (all 8 languages)
         PRAYER_ORDER.forEach(key => {
             const card = document.getElementById(`card-${key}`);
             if (card) {
                 const nameEl = card.querySelector('.prayer-card-name');
-                if (nameEl) nameEl.textContent = lang === 'hi' ? PRAYER_NAMES[key].hi : PRAYER_NAMES[key].en;
+                if (nameEl) {
+                    const n = PRAYER_NAMES[key];
+                    nameEl.textContent = n[lang] || n.en;
+                }
             }
         });
-        
-        // Also update next prayer title if already running
-        updatePrayerCards();
+
+        // Secondary time labels
+        const secLabels = {
+            imsak: { en:'Imsak (Sehri)', ar:'الإمساك (السحور)', ur:'اِمساک (سحری)', hi:'इमसाक (सहरी)', fr:'Imsak (Sahur)', bn:'ইমসাক (সেহেরি)', id:'Imsak (Sahur)', tr:'İmsak (Sahur)' },
+            ishraq: { en:'Ishraq', ar:'الإشراق', ur:'اِشراق', hi:'इशराक़', fr:'Ishraq', bn:'ইশরাক', id:'Isyraq', tr:'İşrâk' },
+            zawal: { en:'Zawaal', ar:'الزوال', ur:'زوال', hi:'ज़वाल', fr:'Zaoual', bn:'যোহরের পূর্ব', id:'Zawaal', tr:'Zevalî' },
+            tahajjud: { en:'Tahajjud', ar:'التهجد', ur:'تہجد', hi:'तहज्जुद', fr:'Tahajjud', bn:'তাহাজ্জুদ', id:'Tahajjud', tr:'Teheccüd' }
+        };
+        Object.entries(secLabels).forEach(([key, labels]) => {
+            const el = document.querySelector(`[data-sec="${key}"] .sec-time-label`);
+            if (el) el.textContent = labels[lang] || labels.en;
+        });
+
+        // Section title: Today's Prayer Times
+        const todayTitle = { en:"Today's Prayer Times", ar:"أوقات صلاة اليوم", ur:"آج کی نمازوں کے اوقات", hi:"आज के नमाज़ के वक़्त", fr:"Heures d'Aujourd'hui", bn:"আজকের নামাজের সময়", id:"Waktu Shalat Hari Ini", tr:"Bugünün Namaz Vakitleri" };
+        const sectionTitle = document.querySelector('.prayer-times-section .section-title span:first-child');
+        if (sectionTitle) sectionTitle.textContent = todayTitle[lang] || todayTitle.en;
+
+        // Qibla label
+        const qiblaLabel = document.querySelector('.qibla-label');
+        const qiblaFrom = { en:'from North', ar:'من الشمال', ur:'شمال سے', hi:'उत्तर से', fr:'du Nord', bn:'উত্তর থেকে', id:'dari Utara', tr:'Kuzeyden' };
+        if (qiblaLabel) qiblaLabel.textContent = qiblaFrom[lang] || qiblaFrom.en;
+
+        // Settings modal heading
+        const settingsH2 = document.querySelector('#settingsModal .modal-header h2');
+        const settingsTitles = { en:'Settings', ar:'الإعدادات', ur:'ترتیبات', hi:'सेटिंग्स', fr:'Paramètres', bn:'সেটিংস', id:'Pengaturan', tr:'Ayarlar' };
+        if (settingsH2) settingsH2.textContent = settingsTitles[lang] || settingsTitles.en;
+
+        // Jamaat badge label
+        const jamaatLabel = document.querySelector('.jamaat-label');
+        const jamaatWord = { en:'Jamaat:', ar:'جماعة:', ur:'جماعت:', hi:'जमात:', fr:'Jamaat:', bn:'জামাত:', id:'Jamaah:', tr:'Cemaat:' };
+        if (jamaatLabel) jamaatLabel.textContent = jamaatWord[lang] || jamaatWord.en;
+
+        // Also update next prayer cards
+        if (state.todayTimings) updatePrayerCards();
     }
 
     // ─── Constants ───
@@ -1458,17 +1496,83 @@
             if (e.target === dom.datePrayerModal) closeDateModal();
         });
 
-        // City search
+        // City search with live autocomplete
+        let _autocompleteTimer = null;
+
+        function showCitySuggestions(results, inputEl, dropdownEl) {
+            if (!dropdownEl) return;
+            dropdownEl.innerHTML = '';
+            if (!results || results.length === 0) { dropdownEl.style.display = 'none'; return; }
+            dropdownEl.style.display = 'block';
+            results.forEach(r => {
+                const item = document.createElement('div');
+                item.style.cssText = 'padding:10px 14px; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.07); font-size:0.9rem; color:var(--text-primary,#fff); transition:background 0.15s;';
+                // Build readable label: city/town, state, country
+                const parts = [];
+                const addr = r.address || {};
+                if (addr.city || addr.town || addr.village || addr.county) parts.push(addr.city || addr.town || addr.village || addr.county);
+                if (addr.state) parts.push(addr.state);
+                if (addr.country) parts.push(addr.country);
+                item.textContent = parts.length ? parts.join(', ') : r.display_name.split(',').slice(0,3).join(',');
+                item.addEventListener('mouseenter', () => item.style.background = 'rgba(255,255,255,0.1)');
+                item.addEventListener('mouseleave', () => item.style.background = '');
+                item.addEventListener('click', () => {
+                    const cityName = addr.city || addr.town || addr.village || addr.county || r.display_name.split(',')[0];
+                    const countryName = addr.country || '';
+                    state.lat = parseFloat(r.lat);
+                    state.lng = parseFloat(r.lon);
+                    state.city = cityName;
+                    state.country = countryName;
+                    if (dom.cityName) dom.cityName.textContent = cityName + (countryName ? ', ' + countryName : '');
+                    saveCurrentLocationToHistory();
+                    fetchPrayerTimes();
+                    calculateQibla();
+                    dropdownEl.style.display = 'none';
+                    if (inputEl) inputEl.value = '';
+                    closeSettingsModal();
+                    showToast(`📍 Switched to ${cityName}`);
+                });
+                dropdownEl.appendChild(item);
+            });
+        }
+
+        async function fetchCitySuggestions(query, inputEl, dropdownEl) {
+            if (!query || query.length < 2) { if(dropdownEl) dropdownEl.style.display = 'none'; return; }
+            try {
+                const controller = new AbortController();
+                const tid = setTimeout(() => controller.abort(), 3000);
+                const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=6&addressdetails=1`;
+                const res = await fetch(url, { signal: controller.signal, headers: { 'Accept-Language': state.appLang || 'en' } });
+                clearTimeout(tid);
+                const data = await res.json();
+                showCitySuggestions(data, inputEl, dropdownEl);
+            } catch { if(dropdownEl) dropdownEl.style.display = 'none'; }
+        }
+
         on('searchCityBtn', 'click', () => {
             const city = dom.manualCity ? dom.manualCity.value.trim() : '';
-            if (city) { searchCity(city); closeSettingsModal(); }
+            if (city) { searchCity(city); closeSettingsModal(); const d = $('cityAutocomplete'); if(d) d.style.display='none'; }
         });
-        if (dom.manualCity) dom.manualCity.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const city = dom.manualCity.value.trim();
-                if (city) { searchCity(city); closeSettingsModal(); }
-            }
-        });
+        if (dom.manualCity) {
+            const acDropdown = $('cityAutocomplete');
+            dom.manualCity.addEventListener('input', (e) => {
+                clearTimeout(_autocompleteTimer);
+                _autocompleteTimer = setTimeout(() => fetchCitySuggestions(e.target.value.trim(), dom.manualCity, acDropdown), 300);
+            });
+            dom.manualCity.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const city = dom.manualCity.value.trim();
+                    if (city) { searchCity(city); closeSettingsModal(); if(acDropdown) acDropdown.style.display='none'; }
+                }
+                if (e.key === 'Escape' && acDropdown) acDropdown.style.display = 'none';
+            });
+            // Hide dropdown on outside click
+            document.addEventListener('click', (e) => {
+                if (acDropdown && !dom.manualCity.contains(e.target) && !acDropdown.contains(e.target)) {
+                    acDropdown.style.display = 'none';
+                }
+            });
+        }
 
         // Month navigation
         on('prevMonthBtn', 'click', () => {
