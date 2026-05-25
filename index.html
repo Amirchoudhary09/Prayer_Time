@@ -505,6 +505,19 @@
             </div>
         </div>
 
+        <!-- Custom PWA Install Prompt -->
+        <div class="modal-overlay" id="installPromptModal" style="z-index: 2000;">
+            <div class="modal glass-card" style="max-width: 350px; text-align: center; padding: 25px;">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📲</div>
+                <h2 style="margin-bottom: 10px;" data-i18n="installAppTitle">Install App</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;" data-i18n="installAppDesc">Install this application on your device for a better, faster, and offline experience.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="setting-btn" id="cancelInstallBtn" style="flex: 1;" data-i18n="notNowBtn">Not Now</button>
+                    <button class="btn-primary" id="confirmInstallBtn" style="flex: 1;" data-i18n="installBtn">Install</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Footer -->
         <footer class="app-footer" id="appFooter">
             <div class="daily-motivation" id="dailyMotivation" style="margin-bottom: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">

@@ -99,7 +99,11 @@
             calHintText: "👆 Tap any date to see prayer times",
             hours: "Hours",
             minutes: "Minutes",
-            seconds: "Seconds"
+            seconds: "Seconds",
+            installAppTitle: "Install App",
+            installAppDesc: "Install this application on your device for a better, faster, and offline experience.",
+            notNowBtn: "Not Now",
+            installBtn: "Install"
         },
         hi: {
             appTitle: "नमाज़ का समय", todayPrayers: "आज के नमाज़ का समय", nextPrayer: "अगली नमाज़",
@@ -109,7 +113,9 @@
             notifPrefsTitle: "सूचना प्राथमिकताएं", enableAllBtn: "सभी चालू करें", notifSoundTitle: "सूचना की आवाज़", sysDefault: "सिस्टम डिफ़ॉल्ट",
             shortBeep: "छोटी बीप", adhanMakkah: "अज़ान (मक्का)", manualOffsetTitle: "मैन्युअल नमाज़ का समय", use24hTitle: "24 घंटे का प्रारूप",
             saveSettingsBtn: "सहेजें", calModalTitle: "📅 नमाज़ कैलेंडर", calHintText: "तारीख पर टैप करें", hours: "घंटे", minutes: "मिनट", seconds: "सेकंड",
-            selectLanguage: "भाषा चुनें", searchLanguage: "भाषा खोजें..."
+            selectLanguage: "भाषा चुनें", searchLanguage: "भाषा खोजें...",
+            installAppTitle: "ऐप इंस्टॉल करें", installAppDesc: "बेहतर और तेज़ अनुभव के लिए इस ऐप को अपने डिवाइस पर इंस्टॉल करें।",
+            notNowBtn: "अभी नहीं", installBtn: "इंस्टॉल करें"
         },
         ar: {
             appTitle: "أوقات الصلاة", todayPrayers: "أوقات صلاة اليوم", nextPrayer: "الصلاة القادمة",
@@ -119,7 +125,9 @@
             notifPrefsTitle: "إعدادات الإشعارات", enableAllBtn: "تفعيل الكل", notifSoundTitle: "صوت الإشعار", sysDefault: "النظام الافتراضي",
             shortBeep: "صوت قصير", adhanMakkah: "أذان (مكة)", manualOffsetTitle: "إعدادات يدوية", use24hTitle: "نظام 24 ساعة",
             saveSettingsBtn: "حفظ", calModalTitle: "📅 تقويم الصلاة", calHintText: "اضغط على أي تاريخ", hours: "ساعات", minutes: "دقائق", seconds: "ثواني",
-            selectLanguage: "اختر اللغة", searchLanguage: "البحث عن لغة..."
+            selectLanguage: "اختر اللغة", searchLanguage: "البحث عن لغة...",
+            installAppTitle: "تثبيت التطبيق", installAppDesc: "قم بتثبيت هذا التطبيق على جهازك للحصول على تجربة أفضل وأسرع.",
+            notNowBtn: "ليس الآن", installBtn: "تثبيت"
         },
         fr: {
             appTitle: "Heures de Prière", todayPrayers: "Heures d'Aujourd'hui", nextPrayer: "Prochaine Prière",
@@ -129,7 +137,9 @@
             notifPrefsTitle: "Préférences de notification", enableAllBtn: "Tout activer", notifSoundTitle: "Son de notification", sysDefault: "Défaut",
             shortBeep: "Bip court", adhanMakkah: "Adhan (Makkah)", manualOffsetTitle: "Décalages manuels", use24hTitle: "Format 24h",
             saveSettingsBtn: "Sauvegarder", calModalTitle: "📅 Calendrier", calHintText: "Appuyez sur une date", hours: "Heures", minutes: "Minutes", seconds: "Secondes",
-            selectLanguage: "Choisir la langue", searchLanguage: "Rechercher une langue..."
+            selectLanguage: "Choisir la langue", searchLanguage: "Rechercher une langue...",
+            installAppTitle: "Installer l'App", installAppDesc: "Installez cette application pour une expérience plus rapide et hors ligne.",
+            notNowBtn: "Pas maintenant", installBtn: "Installer"
         },
         ur: {
             appTitle: "نماز کے اوقات", todayPrayers: "آج کے اوقات", nextPrayer: "اگلی نماز",
@@ -139,7 +149,9 @@
             notifPrefsTitle: "اطلاعات", enableAllBtn: "سب آن کریں", notifSoundTitle: "آواز", sysDefault: "سسٹم",
             shortBeep: "چھوٹی بیپ", adhanMakkah: "اذان (مکہ)", manualOffsetTitle: "جماعت کا وقت", use24hTitle: "24 گھنٹے کا وقت",
             saveSettingsBtn: "محفوظ کریں", calModalTitle: "📅 کیلنڈر", calHintText: "تاریخ پر کلک کریں", hours: "گھنٹے", minutes: "منٹ", seconds: "سیکنڈ",
-            selectLanguage: "زبان منتخب کریں", searchLanguage: "زبان تلاش کریں..."
+            selectLanguage: "زبان منتخب کریں", searchLanguage: "زبان تلاش کریں...",
+            installAppTitle: "ایپ انسٹال کریں", installAppDesc: "بہتر اور تیز تجربے کے لیے اس ایپ کو اپنے ڈیوائس پر انسٹال کریں۔",
+            notNowBtn: "ابھی نہیں", installBtn: "انسٹال کریں"
         },
         bn: {
             appTitle: "নামাজের সময়", todayPrayers: "আজকের নামাজের সময়", nextPrayer: "পরবর্তী নামাজ",
@@ -149,7 +161,9 @@
             notifPrefsTitle: "বিজ্ঞপ্তি সেটিংস", enableAllBtn: "সব চালু করুন", notifSoundTitle: "বিজ্ঞপ্তির শব্দ", sysDefault: "ডিফল্ট",
             shortBeep: "ছোট বিপ", adhanMakkah: "আজান (মক্কা)", manualOffsetTitle: "ম্যানুয়াল সময়", use24hTitle: "২৪ ঘন্টা বিন্যাস",
             saveSettingsBtn: "সংরক্ষণ করুন", calModalTitle: "📅 ক্যালেন্ডার", calHintText: "তারিখে ট্যাপ করুন", hours: "ঘন্টা", minutes: "মিনিট", seconds: "সেকেন্ড",
-            selectLanguage: "ভাষা নির্বাচন করুন", searchLanguage: "ভাষা খুঁজুন..."
+            selectLanguage: "ভাষা নির্বাচন করুন", searchLanguage: "ভাষা খুঁজুন...",
+            installAppTitle: "অ্যাপ ইনস্টল করুন", installAppDesc: "উন্নত এবং দ্রুত অভিজ্ঞতার জন্য এই অ্যাপটি আপনার ডিভাইসে ইনস্টল করুন।",
+            notNowBtn: "এখন না", installBtn: "ইনস্টল করুন"
         },
         id: {
             appTitle: "Waktu Shalat", todayPrayers: "Waktu Shalat Hari Ini", nextPrayer: "Shalat Berikutnya",
@@ -159,7 +173,9 @@
             notifPrefsTitle: "Notifikasi", enableAllBtn: "Aktifkan Semua", notifSoundTitle: "Suara Notifikasi", sysDefault: "Default",
             shortBeep: "Bip Pendek", adhanMakkah: "Adzan (Makkah)", manualOffsetTitle: "Waktu Jamaah", use24hTitle: "Format 24 Jam",
             saveSettingsBtn: "Simpan", calModalTitle: "📅 Kalender", calHintText: "Ketuk tanggal", hours: "Jam", minutes: "Menit", seconds: "Detik",
-            selectLanguage: "Pilih Bahasa", searchLanguage: "Cari bahasa..."
+            selectLanguage: "Pilih Bahasa", searchLanguage: "Cari bahasa...",
+            installAppTitle: "Instal Aplikasi", installAppDesc: "Instal aplikasi ini di perangkat Anda untuk pengalaman yang lebih baik.",
+            notNowBtn: "Nanti saja", installBtn: "Instal"
         },
         tr: {
             appTitle: "Namaz Vakitleri", todayPrayers: "Bugünün Vakitleri", nextPrayer: "Sonraki Vakit",
@@ -169,7 +185,9 @@
             notifPrefsTitle: "Bildirimler", enableAllBtn: "Tümünü Aç", notifSoundTitle: "Bildirim Sesi", sysDefault: "Varsayılan",
             shortBeep: "Kısa Bip", adhanMakkah: "Ezan (Mekke)", manualOffsetTitle: "Cemaat Vakti", use24hTitle: "24 Saat Formatı",
             saveSettingsBtn: "Kaydet", calModalTitle: "📅 Takvim", calHintText: "Tarihe dokunun", hours: "Saat", minutes: "Dakika", seconds: "Saniye",
-            selectLanguage: "Dil Seç", searchLanguage: "Dil ara..."
+            selectLanguage: "Dil Seç", searchLanguage: "Dil ara...",
+            installAppTitle: "Uygulamayı Yükle", installAppDesc: "Daha iyi, hızlı ve çevrimdışı kullanım için bu uygulamayı yükleyin.",
+            notNowBtn: "Şimdi Değil", installBtn: "Yükle"
         }
     };
 
@@ -1476,6 +1494,49 @@
                 closeLocManagerModal();
                 closeJamaatModal();
                 locMenu.style.display = 'none';
+            }
+        });
+    }
+
+    // ─── Custom PWA Install Prompt ───
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent default browser prompt
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show our custom modal if they haven't dismissed it
+        const installModal = $('installPromptModal');
+        if (installModal && !localStorage.getItem('pt_pwa_dismissed')) {
+            setTimeout(() => {
+                installModal.classList.add('active');
+            }, 2500); // Wait 2.5s before showing popup
+        }
+    });
+
+    window.addEventListener('appinstalled', () => {
+        // Hide the prompt if they install it through other means
+        if($('installPromptModal')) $('installPromptModal').classList.remove('active');
+        deferredPrompt = null;
+    });
+
+    if ($('cancelInstallBtn')) {
+        $('cancelInstallBtn').addEventListener('click', () => {
+            $('installPromptModal').classList.remove('active');
+            localStorage.setItem('pt_pwa_dismissed', 'true'); // don't ask again
+        });
+    }
+
+    if ($('confirmInstallBtn')) {
+        $('confirmInstallBtn').addEventListener('click', async () => {
+            $('installPromptModal').classList.remove('active');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                }
+                deferredPrompt = null;
             }
         });
     }
