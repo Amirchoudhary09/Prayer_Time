@@ -130,7 +130,7 @@ function createDayCell(dayNum, isOtherMonth, isToday, isFriday, dateStr, holiday
         cell.classList.add('has-festival');
         const hSpan = document.createElement('div');
         hSpan.className = 'cal-holiday';
-        hSpan.textContent = holidays.map(h => getFestivalIcon(h)).join(' ');
+        hSpan.textContent = holidays.join(', ');
         cell.appendChild(hSpan);
         cell.style.position = 'relative';
         cell.title = holidays.join(' • ');
@@ -194,7 +194,7 @@ async function renderHijriCalendar() {
                 cell.classList.add('has-festival');
                 const hSpan = document.createElement('div');
                 hSpan.className = 'cal-holiday';
-                hSpan.textContent = holidays.map(h => getFestivalIcon(h)).join(' ');
+                hSpan.textContent = holidays.join(', ');
                 cell.appendChild(hSpan);
                 cell.style.position = 'relative';
                 cell.title = holidays.join(' • ');

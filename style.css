@@ -1,5 +1,5 @@
-/* ============================================
-   🕌 PRAYER TIMES APP - DESIGN SYSTEM
+﻿/* ============================================
+   ðŸ•Œ PRAYER TIMES APP - DESIGN SYSTEM
    Premium Islamic-themed UI
    ============================================ */
 
@@ -669,7 +669,7 @@ body {
     white-space: nowrap;
     justify-self: end;
     align-self: end;
-    /* Shift left so the tracker ✓ button (right:6px, 28px wide) doesn't overlap */
+    /* Shift left so the tracker âœ“ button (right:6px, 28px wide) doesn't overlap */
     padding-right: 40px;
 }
 
@@ -684,7 +684,7 @@ body {
     border-radius: 20px;
     white-space: nowrap;
     justify-self: end;
-    align-self: start;   /* ← Top of the card */
+    align-self: start;   /* â† Top of the card */
     margin-top: 2px;     /* tiny breathing room from top edge */
 }
 
@@ -759,7 +759,7 @@ body {
     top: 50%;
     left: 50%;
     transform-origin: center center;
-    /* Smooth via JS requestAnimationFrame — CSS transition removed to avoid jerks */
+    /* Smooth via JS requestAnimationFrame â€” CSS transition removed to avoid jerks */
     will-change: transform;
 }
 
@@ -1054,14 +1054,18 @@ body {
 
 .cal-holiday {
     position: absolute;
-    bottom: 3px;
+    bottom: 2px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 0.75rem;
+    font-size: 0.55rem;
+    font-weight: 600;
     text-align: center;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    color: var(--accent-light);
     line-height: 1;
-    letter-spacing: -1px;
     pointer-events: none;
 }
 
@@ -1260,7 +1264,7 @@ body {
     min-width: 70px;
 }
 
-/* ─── Festival / Holiday Banner in Date Modal ─── */
+/* â”€â”€â”€ Festival / Holiday Banner in Date Modal â”€â”€â”€ */
 .dp-festival-row {
     margin-top: var(--gap-sm);
 }
@@ -1853,7 +1857,7 @@ body {
 .prayer-card.tracker-done { opacity: 0.65; }
 .prayer-card.tracker-done .prayer-card-time { text-decoration: line-through; text-decoration-color: #4ade8088; }
 
-/* Pencil hint — top LEFT corner, not touching time */
+/* Pencil hint â€” top LEFT corner, not touching time */
 .prayer-edit-hint {
     position: absolute;
     top: 6px;
@@ -2051,7 +2055,7 @@ body {
 }
 
 /* --------------------------------------------
-   ?? TASBEEH � Mode Tabs & Custom Panel
+   ?? TASBEEH — Mode Tabs & Custom Panel
 -------------------------------------------- */
 .tasbeeh-mode-tabs {
     display: flex;
