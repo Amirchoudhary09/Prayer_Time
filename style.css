@@ -669,7 +669,10 @@ body {
     white-space: nowrap;
     justify-self: end;
     align-self: end;
+    /* Shift left so the tracker ✓ button (right:6px, 28px wide) doesn't overlap */
+    padding-right: 40px;
 }
+
 
 .prayer-card-status {
     grid-area: status;
@@ -1822,8 +1825,9 @@ body {
 /* Tracker checkmark button on prayer cards */
 .tracker-btn {
     position: absolute;
-    bottom: 8px;
-    right: 8px;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 28px;
     height: 28px;
     border-radius: 50%;
@@ -1845,17 +1849,18 @@ body {
 .prayer-card.tracker-done { opacity: 0.65; }
 .prayer-card.tracker-done .prayer-card-time { text-decoration: line-through; text-decoration-color: #4ade8088; }
 
-/* Pencil hint on prayer cards */
+/* Pencil hint — top LEFT corner, not touching time */
 .prayer-edit-hint {
     position: absolute;
     top: 6px;
-    right: 8px;
+    left: 8px;
     font-size: 0.65rem;
-    opacity: 0.3;
+    opacity: 0.25;
     pointer-events: none;
     transition: opacity 0.2s;
 }
-.prayer-card:hover .prayer-edit-hint { opacity: 0.8; }
+.prayer-card:hover .prayer-edit-hint { opacity: 0.75; }
+
 
 /* --------------------------------------------
    ?? RAMADAN / SEHRI IFTAR SECTION
