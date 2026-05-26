@@ -210,10 +210,13 @@ export function updatePrayerCards() {
 
         card.classList.remove('active', 'next', 'passed');
         let statusText = '';
-        if (isPassed)      { card.classList.add('passed');  statusText = dict.passed  || 'PASSED';  }
-        else if (isCurrent){ card.classList.add('active');  statusText = dict.current || 'CURRENT'; }
-        else if (isNext)   { card.classList.add('next');    statusText = dict.next    || 'NEXT';    }
-        statusEl.textContent = statusText;
+        if (key === 'sunrise') {
+            // Sunrise is NOT a prayer — no status badge
+            statusEl.textContent = '';
+        } else if (isPassed)       { card.classList.add('passed');  statusText = dict.passed  || 'PASSED';  }
+          else if (isCurrent){ card.classList.add('active');  statusText = dict.current || 'CURRENT'; }
+          else if (isNext)   { card.classList.add('next');    statusText = dict.next    || 'NEXT';    }
+        if (key !== 'sunrise') statusEl.textContent = statusText;
     });
 
     // Hero card

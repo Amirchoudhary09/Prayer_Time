@@ -676,15 +676,16 @@ body {
 
 .prayer-card-status {
     grid-area: status;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.68rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     padding: 3px 8px;
     border-radius: 20px;
     white-space: nowrap;
     justify-self: end;
-    align-self: start;
+    align-self: start;   /* ← Top of the card */
+    margin-top: 2px;     /* tiny breathing room from top edge */
 }
 
 .prayer-card.active .prayer-card-status {
@@ -1539,11 +1540,14 @@ body {
     100% { background-position: -200% 0; }
 }
 
-/* ---------- Responsive ---------- */
 @media (max-width: 640px) {
     .app-container {
         padding: 0 12px;
         padding-bottom: 200px;
+    }
+
+    .date-display {
+        text-align: center;
     }
 
     .header-text h1 {
