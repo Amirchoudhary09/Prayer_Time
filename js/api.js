@@ -57,24 +57,44 @@ function toDeg(rad) { return rad * 180 / Math.PI; }
 
 // ─── Device Compass ───
 export function initDeviceCompass() {
+    // Check basic support
     if (!window.DeviceOrientationEvent) {
         showToast('❌ Compass not supported on this device'); return;
     }
+
     const activate = () => {
-        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
         state.isCompassActive = true;
+
+        // ── Android: try 'deviceorientationabsolute' first (Chrome 50+, most accurate) ──
+        // This gives absolute heading vs magnetic North directly — no conversion needed
+        let usingAbsolute = false;
+        if ('ondeviceorientationabsolute' in window) {
+            window.addEventListener('deviceorientationabsolute', handleOrientation, { passive: true });
+            usingAbsolute = true;
+            console.log('[Compass] Using deviceorientationabsolute (Android absolute)');
+        }
+        // ── Fallback: standard deviceorientation (iOS + older Android) ──
+        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
+        if (!usingAbsolute) {
+            console.log('[Compass] Using deviceorientation (iOS / standard)');
+        }
+
+        // UI updates
         const btn = $('enableCompassBtn');
         if (btn) btn.style.display = 'none';
-        // Show phone heading stat block
         const headingBlock = $('headingStatBlock');
         if (headingBlock) headingBlock.style.display = 'flex';
         const accBar = $('qiblaAccuracyBar');
         if (accBar) accBar.style.display = 'flex';
-        showToast('🧭 Compass active — rotate your phone!');
+
+        const platform = /iPhone|iPad|iPod/i.test(navigator.userAgent) ? 'iOS' : 'Android';
+        showToast(`🧭 Compass active (${platform}) — rotate your phone!`);
     };
+
+    // iOS 13+ needs explicit permission request
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
-            .then(p => p === 'granted' ? activate() : showToast('❌ Permission denied for compass'))
+            .then(p => p === 'granted' ? activate() : showToast('❌ Permission denied — enable in iOS Settings'))
             .catch(console.error);
     } else {
         activate();
@@ -116,27 +136,52 @@ function smoothCompassLoop() {
     _rafId = requestAnimationFrame(smoothCompassLoop);
 }
 
+// Low-pass filter state (smooths noisy sensor readings on Android)
+let _lpHeading = null;
+const LP_ALPHA  = 0.15; // 0 = no update, 1 = raw (0.15 = smooth)
+
 function handleOrientation(e) {
-    // webkitCompassHeading = iOS (always clockwise from North)
-    // alpha = Android (anti-clockwise, so we invert)
-    let heading = 0;
-    if (e.webkitCompassHeading != null && e.webkitCompassHeading !== 0) {
+    let heading = null;
+
+    // ── Priority 1: iOS webkitCompassHeading (most reliable on iOS) ──
+    if (e.webkitCompassHeading != null && e.webkitCompassHeading >= 0) {
         heading = e.webkitCompassHeading;
+
+    // ── Priority 2: deviceorientationabsolute (Android Chrome — alpha is absolute) ──
+    } else if (e.absolute === true && e.alpha != null) {
+        // For absolute events, alpha is directly the compass heading (CW from North)
+        // But browser gives it CCW, so invert
+        heading = (360 - e.alpha) % 360;
+
+    // ── Priority 3: standard deviceorientation alpha (Android fallback) ──
     } else if (e.alpha != null) {
         heading = (360 - e.alpha) % 360;
-    } else {
-        return;
     }
 
-    _rawHeading = heading;
+    if (heading === null || isNaN(heading)) return;
+
+    // ── Low-pass filter: smooth out jittery sensor noise ──
+    if (_lpHeading === null) {
+        _lpHeading = heading;
+    } else {
+        // Handle wrap-around (e.g. 5° and 355° should blend to ~0°)
+        let diff = heading - _lpHeading;
+        while (diff >  180) diff -= 360;
+        while (diff < -180) diff += 360;
+        _lpHeading = _lpHeading + LP_ALPHA * diff;
+        _lpHeading = ((_lpHeading % 360) + 360) % 360;
+    }
+
+    const smoothHeading = _lpHeading;
+    _rawHeading = smoothHeading;
 
     // Update phone heading display
     const headingEl = $('phoneHeading');
-    if (headingEl) headingEl.textContent = Math.round(heading) + '°';
+    if (headingEl) headingEl.textContent = Math.round(smoothHeading) + '°';
 
     // Needle points to Qibla relative to North, minus current heading
-    const needleTarget = state.qiblaAngle - heading;
-    const ringTarget   = -heading;
+    const needleTarget = state.qiblaAngle - smoothHeading;
+    const ringTarget   = -smoothHeading;
 
     // Use short-path to set smooth targets
     _targetNeedleAngle = shortPath(_currentNeedleAngle, needleTarget);

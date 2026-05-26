@@ -43,6 +43,38 @@ async function init() {
     const yearEl = document.getElementById('currentYear');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+    // 8b. Offline / Online detection
+    const offlineBanner = document.getElementById('offlineBanner');
+    function updateNetworkStatus() {
+        if (!navigator.onLine) {
+            if (offlineBanner) offlineBanner.style.display = 'flex';
+            import('./ui.js').then(({ showToast }) =>
+                showToast('📵 Offline — showing cached prayer times')
+            );
+        } else {
+            if (offlineBanner) offlineBanner.style.display = 'none';
+        }
+    }
+    window.addEventListener('online',  updateNetworkStatus);
+    window.addEventListener('offline', updateNetworkStatus);
+    updateNetworkStatus(); // Check on load
+
+    // 8c. Service Worker: notify when a new version is available
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const newWorker = reg.installing;
+                newWorker?.addEventListener('statechange', () => {
+                    if (newWorker.statechange === 'installed' && navigator.serviceWorker.controller) {
+                        import('./ui.js').then(({ showToast }) =>
+                            showToast('🔄 New version available! Pull to refresh.')
+                        );
+                    }
+                });
+            });
+        });
+    }
+
     // 9. Wire up countdown — api.js fires this after each prayer times fetch
     document.addEventListener('prayerTimesLoaded', () => {
         startCountdown();
