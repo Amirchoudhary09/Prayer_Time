@@ -62,6 +62,70 @@ async function _detectInBackground() {
     }
 }
 
+// ─── Switch to any saved location instantly ───
+export async function switchToLocation(loc) {
+    state.lat = loc.lat; state.lng = loc.lng;
+    state.city = loc.city; state.country = loc.country;
+    if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
+    saveCurrentLocationToHistory();
+    state.hijriCalData = null;
+    closeLocManagerModal();
+    showToast(`📍 ${state.city} set!`);
+    await fetchPrayerTimes();
+    calculateQibla();
+}
+
+// ─── GPS Re-detect (called from "Use My Current Location" button) ───
+export async function switchToGPS() {
+    const gpsBtn = $('useGPSBtn');
+    if (gpsBtn) { gpsBtn.disabled = true; gpsBtn.querySelector('strong').textContent = 'Detecting...'; }
+    if (dom.cityName) dom.cityName.textContent = '🛰️ Detecting GPS...';
+    closeLocManagerModal();
+    showToast('🛰️ Detecting your location...');
+
+    // Try GPS first
+    if ('geolocation' in navigator) {
+        try {
+            const pos = await new Promise((res, rej) =>
+                navigator.geolocation.getCurrentPosition(res, rej, {
+                    enableHighAccuracy: true, timeout: 10000, maximumAge: 0
+                })
+            );
+            state.lat = pos.coords.latitude; state.lng = pos.coords.longitude;
+            await reverseGeocode(state.lat, state.lng);
+            saveCurrentLocationToHistory();
+            state.hijriCalData = null;
+            await fetchPrayerTimes();
+            calculateQibla();
+            showToast(`✅ Location set: ${state.city}`);
+            if (gpsBtn) { gpsBtn.disabled = false; gpsBtn.querySelector('strong').textContent = 'Use My Current Location'; }
+            return;
+        } catch { /* GPS failed or denied */ }
+    }
+
+    // Fallback: IP-based
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const d   = await res.json();
+        if (d && d.latitude) {
+            state.lat = d.latitude; state.lng = d.longitude;
+            state.city = d.city || 'Unknown'; state.country = d.country_name || '';
+            if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
+            saveCurrentLocationToHistory();
+            state.hijriCalData = null;
+            await fetchPrayerTimes();
+            calculateQibla();
+            showToast(`📍 Location via IP: ${state.city}`);
+        } else {
+            showToast('❌ Could not detect location');
+        }
+    } catch {
+        showToast('❌ Location detection failed');
+    }
+
+    if (gpsBtn) { gpsBtn.disabled = false; gpsBtn.querySelector('strong').textContent = 'Use My Current Location'; }
+}
+
 // ─── City Search (by name string) ───
 export async function searchCity(cityName) {
     try {
@@ -113,31 +177,44 @@ export function renderSavedLocations() {
     const list = $('savedLocationsList');
     if (!list) return;
     list.innerHTML = '';
+
     if (state.savedLocations.length === 0) {
-        list.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem;">No saved locations yet.</span>';
+        list.innerHTML = '<span style="color:var(--text-muted);font-size:0.8rem;">No saved locations yet. Search a city or use GPS.</span>';
         return;
     }
-    state.savedLocations.forEach((loc, idx) => {
+
+    list.style.display = 'flex';
+    list.style.flexDirection = 'column';
+    list.style.gap = '8px';
+    list.style.marginTop = '8px';
+
+    state.savedLocations.forEach((loc) => {
+        const isActive = loc.city === state.city;
         const item = document.createElement('div');
-        item.className = 'saved-loc-item' + (idx === 0 ? ' active' : '');
-        const info = document.createElement('div');
-        info.style.flex = '1';
-        info.innerHTML = `<strong>${loc.city}</strong><br><span style="font-size:0.75rem;color:var(--text-muted);">${loc.country}</span>`;
-        info.addEventListener('click', async () => {
-            state.lat = loc.lat; state.lng = loc.lng;
-            state.city = loc.city; state.country = loc.country;
-            if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-            saveCurrentLocationToHistory();
-            state.hijriCalData = null;
-            closeLocManagerModal();
-            await fetchPrayerTimes(); calculateQibla();
-            showToast(`📍 Switched to ${state.city}`);
+        item.className = 'saved-loc-item' + (isActive ? ' active' : '');
+        item.title = `Tap to switch to ${loc.city}`;
+
+        item.innerHTML = `
+            <div class="saved-loc-info">
+                <div class="saved-loc-city">${loc.city}</div>
+                <div class="saved-loc-country">${loc.country}</div>
+            </div>
+            ${isActive ? '<span class="saved-loc-active-badge">● Active</span>' : '<span class="saved-loc-switch-hint">Tap →</span>'}
+            <button class="saved-loc-delete" title="Remove" aria-label="Remove ${loc.city}">✕</button>
+        `;
+
+        // Tap whole row → switch instantly
+        item.addEventListener('click', async (e) => {
+            if (e.target.closest('.saved-loc-delete')) return;
+            await switchToLocation(loc);
+            renderSavedLocations();
         });
-        const delBtn = document.createElement('button');
-        delBtn.className = 'saved-loc-delete';
-        delBtn.innerHTML = '✕'; delBtn.title = 'Remove';
-        delBtn.addEventListener('click', (e) => { e.stopPropagation(); deleteLocation(loc.city); });
-        item.appendChild(info); item.appendChild(delBtn);
+
+        item.querySelector('.saved-loc-delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteLocation(loc.city);
+        });
+
         list.appendChild(item);
     });
 }

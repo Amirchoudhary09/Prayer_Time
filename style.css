@@ -2171,3 +2171,63 @@ body {
     background: linear-gradient(135deg, rgba(56,189,248,0.3), rgba(56,189,248,0.15));
     transform: translateY(-1px);
 }
+
+/* ================================================
+   GPS Location Manager Styles
+================================================ */
+.loc-gps-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, rgba(56,189,248,0.12), rgba(56,189,248,0.04));
+    border: 1px solid rgba(56,189,248,0.35);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+}
+.loc-gps-btn:hover { background: linear-gradient(135deg, rgba(56,189,248,0.22), rgba(56,189,248,0.08)); transform: translateX(3px); }
+.loc-gps-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.loc-gps-icon { font-size: 1.6rem; }
+.loc-gps-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.loc-gps-text strong { font-size: 0.9rem; color: #38bdf8; }
+.loc-gps-text span   { font-size: 0.75rem; color: var(--text-muted); }
+.loc-gps-arrow { font-size: 1.6rem; color: #38bdf8; margin-left: auto; }
+
+.saved-locations-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+.saved-loc-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.saved-loc-item:hover { background: var(--glass-hover); transform: translateX(3px); }
+.saved-loc-item.active { border-color: rgba(212,175,55,0.5); background: rgba(212,175,55,0.07); }
+.saved-loc-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.saved-loc-city    { font-size: 0.9rem; font-weight: 600; }
+.saved-loc-country { font-size: 0.75rem; color: var(--text-muted); }
+.saved-loc-active-badge { font-size: 0.7rem; color: var(--accent-light); font-weight: 700; white-space: nowrap; }
+.saved-loc-switch-hint { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; opacity: 0.6; transition: opacity 0.2s; }
+.saved-loc-item:hover .saved-loc-switch-hint { opacity: 1; color: var(--accent-light); }
+.saved-loc-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 50%;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.saved-loc-delete:hover { background: rgba(239,68,68,0.15); color: #ef4444; }

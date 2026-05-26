@@ -476,21 +476,36 @@
         <div class="modal-overlay" id="locationManagerModal">
             <div class="modal glass-card">
                 <div class="modal-header">
-                    <h2>Location Manager</h2>
+                    <h2>📍 Location Manager</h2>
                     <button class="modal-close" id="closeLocManagerBtn" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
+
+                    <!-- GPS Button -->
+                    <button class="loc-gps-btn" id="useGPSBtn">
+                        <span class="loc-gps-icon">🛰️</span>
+                        <div class="loc-gps-text">
+                            <strong>Use My Current Location</strong>
+                            <span>Detect via GPS automatically</span>
+                        </div>
+                        <span class="loc-gps-arrow">›</span>
+                    </button>
+
+                    <!-- Search -->
                     <div class="setting-group">
-                        <label class="setting-label">Search New Location</label>
-                        <input type="text" id="locManagerSearchInput" class="setting-input" placeholder="e.g. Mumbai, Delhi, London...">
-                        <button class="setting-btn" id="locManagerSearchBtn">Search</button>
-                    </div>
-                    <div class="setting-group">
-                        <label class="setting-label">Saved Locations</label>
-                        <div id="savedLocationsList" class="saved-locations-list" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                            <!-- Filled by JS -->
+                        <label class="setting-label">🔍 Search New City</label>
+                        <div style="display:flex;gap:8px;">
+                            <input type="text" id="locManagerSearchInput" class="setting-input" placeholder="e.g. Mumbai, Delhi, London..." style="flex:1;">
+                            <button class="setting-btn" id="locManagerSearchBtn" style="white-space:nowrap;">Search</button>
                         </div>
                     </div>
+
+                    <!-- Saved Locations -->
+                    <div class="setting-group">
+                        <label class="setting-label">🕐 Recent Locations <span style="font-size:0.72rem;color:var(--text-muted);font-weight:400;">(tap to switch)</span></label>
+                        <div id="savedLocationsList" class="saved-locations-list"></div>
+                    </div>
+
                 </div>
             </div>
         </div>

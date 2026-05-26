@@ -6,7 +6,8 @@ import { state } from './state.js';
 import { dom, $ } from './dom.js';
 import { fetchPrayerTimes, calculateQibla, initDeviceCompass } from './api.js';
 import { applyLanguage, showToast, updatePrayerCards, toggleTheme } from './ui.js';
-import { detectLocation, searchCity, deleteLocation, saveCurrentLocationToHistory, openLocManagerModal, closeLocManagerModal } from './location.js';
+import { detectLocation, searchCity, deleteLocation, saveCurrentLocationToHistory, openLocManagerModal, closeLocManagerModal, switchToGPS } from './location.js';
+
 import { loadSettings, saveSettings, openSettingsModal, closeSettingsModal, openEditTimeModal, closeEditTimeModal, getCurrentEditingPrayer } from './settings.js';
 import { openCalendarModal, closeCalendarModal, toggleCalendarLang, renderCalendar, openDatePrayerModal, closeDateModal } from './calendar.js';
 import { startCountdown } from './notifications.js';
@@ -147,11 +148,15 @@ export function bindEvents() {
     // Theme toggle
     on('themeToggleBtn', 'click', toggleTheme);
 
+    // GPS button in location modal
+    on('useGPSBtn', 'click', () => switchToGPS());
+
     // Location Manager
     on('closeLocManagerBtn',    'click', closeLocManagerModal);
     on('locationManagerModal',  'click', e => { if (e.target === $('locationManagerModal')) closeLocManagerModal(); });
     on('locManagerSearchBtn',   'click', () => { const c = $('locManagerSearchInput')?.value.trim(); if (c) { searchCity(c); closeLocManagerModal(); $('locManagerSearchInput').value = ''; } });
     on('locManagerSearchInput', 'keydown', e => { if (e.key === 'Enter') { const c = $('locManagerSearchInput').value.trim(); if (c) { searchCity(c); closeLocManagerModal(); $('locManagerSearchInput').value = ''; } } });
+
 
     // Location long press & context menu
     const locWrapper = $('locationDisplayWrapper');
