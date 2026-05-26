@@ -223,15 +223,47 @@ function updateAccuracyBar(accuracy, diffDeg) {
     }
 }
 
-// ─── Reverse Geocode ───
+// ─── Reverse Geocode — Precise locality detection ───
 export async function reverseGeocode(lat, lng) {
     try {
-        const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        // zoom=14 = neighbourhood level (more precise than city-level zoom=10)
+        const res  = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=14&addressdetails=1`
+        );
         const data = await res.json();
-        state.city    = data.address.city || data.address.town || data.address.village || data.address.county || 'Unknown';
-        state.country = data.address.country || '';
-        if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
+        const addr = data.address || {};
+
+        // Build precise city name:
+        // Priority: suburb > neighbourhood > quarter > town > city > county
+        // This gives "Noida" or "Sector 18, Noida" instead of "Gurgaon"
+        const locality =
+            addr.suburb        ||
+            addr.neighbourhood ||
+            addr.quarter       ||
+            addr.village       ||
+            addr.town          ||
+            addr.city          ||
+            addr.county        ||
+            addr.state_district||
+            'Unknown';
+
+        // If locality is a sector/area name, append parent city for clarity
+        // e.g. "Sector 18" → "Sector 18, Noida"
+        const parentCity = addr.city || addr.town || addr.county || '';
+        const isGenericCity = locality === parentCity;
+        state.city = isGenericCity
+            ? locality
+            : parentCity && locality !== parentCity
+                ? `${locality}, ${parentCity}`
+                : locality;
+
+        state.country = addr.country || '';
+        if (dom.cityName) dom.cityName.textContent =
+            state.city + (state.country ? ', ' + state.country : '');
+
     } catch {
-        if (dom.cityName) dom.cityName.textContent = `${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+        // Fallback: show coordinates
+        if (dom.cityName) dom.cityName.textContent =
+            `${lat.toFixed(3)}°N, ${lng.toFixed(3)}°E`;
     }
 }

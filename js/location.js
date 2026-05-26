@@ -50,7 +50,7 @@ async function _detectInBackground() {
         try {
             const pos = await new Promise((res, rej) =>
                 navigator.geolocation.getCurrentPosition(res, rej, {
-                    enableHighAccuracy: false, timeout: 8000, maximumAge: 600000
+                    enableHighAccuracy: true, timeout: 10000, maximumAge: 0
                 })
             );
             state.lat = pos.coords.latitude; state.lng = pos.coords.longitude;
