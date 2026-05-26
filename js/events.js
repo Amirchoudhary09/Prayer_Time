@@ -206,6 +206,27 @@ export function bindEvents() {
         showToast('✅ Jamaat times saved!');
     });
 
+    // Reset ALL jamaat times to default
+    on('resetAllJamaatBtn', 'click', () => {
+        // Clear all custom times
+        state.jamaatTimes = { imsak:'', fajr:'', sunrise:'', ishraq:'', zawal:'', dhuhr:'', asr:'', maghrib:'', isha:'', tahajjud:'' };
+        localStorage.setItem('pt_jamaat_times', JSON.stringify(state.jamaatTimes));
+        // Also clear input fields in the modal
+        ['Fajr','Dhuhr','Asr','Maghrib','Isha'].forEach(k => {
+            const el = $(`quickOffset${k}`);
+            if (el) el.value = '';
+        });
+        // Clear settings modal fields too
+        if (dom.offsetFajr) {
+            dom.offsetFajr.value = ''; dom.offsetDhuhr.value = '';
+            dom.offsetAsr.value  = ''; dom.offsetMaghrib.value = '';
+            dom.offsetIsha.value = '';
+        }
+        closeJamaatModal();
+        updatePrayerCards();
+        showToast('🔄 All Jamaat times reset!');
+    });
+
     // Escape closes all
     document.addEventListener('keydown', e => {
         if (e.key === 'Escape') {

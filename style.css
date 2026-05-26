@@ -381,24 +381,32 @@ body {
 .hero-card {
     position: relative;
     padding: var(--gap-xl);
+    padding-top: calc(var(--gap-xl) + 48px); /* space for absolute badge */
     text-align: center;
     overflow: hidden;
     border-color: var(--accent-glow);
 }
 
+/* When badge is hidden (display:none), remove extra padding */
+.hero-card:has(#jamaatTimeBadge[style*="display: none"]) {
+    padding-top: var(--gap-xl);
+}
+
 .jamaat-time-badge {
     position: absolute;
     top: 15px;
-    left: 15px;
+    left: 50%;
+    transform: translateX(-50%);
     background: rgba(212, 175, 55, 0.15);
     border: 1px solid rgba(212, 175, 55, 0.3);
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.8rem;
     display: flex;
     align-items: center;
     gap: 6px;
     z-index: 10;
+    white-space: nowrap;
 }
 
 .jamaat-time-badge .jamaat-label {
@@ -520,6 +528,7 @@ body {
     font-size: 1.1rem;
     color: var(--text-secondary);
     font-weight: 500;
+    margin-top: 4px;
 }
 
 /* ---------- Prayer Cards Grid ---------- */
@@ -1432,6 +1441,29 @@ body {
 
     .hero-card {
         padding: var(--gap-lg);
+        padding-top: calc(var(--gap-lg) + 52px);
+    }
+
+    .hero-card:has(#jamaatTimeBadge[style*="display: none"]) {
+        padding-top: var(--gap-lg);
+    }
+
+    .jamaat-time-badge {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+
+    .current-prayer-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+    }
+
+    .prayer-arabic {
+        font-size: 1.5rem !important;
+    }
+
+    .prayer-english {
+        font-size: 1.3rem !important;
     }
 
     .prayer-arabic {
