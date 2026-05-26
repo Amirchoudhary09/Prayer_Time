@@ -9,6 +9,10 @@ import { loadSettings } from './settings.js';
 import { detectLocation } from './location.js';
 import { bindEvents, initLangModal, initPWA } from './events.js';
 import { startCountdown } from './notifications.js';
+import { initTasbeeh } from './tasbeeh.js';
+import { initTracker, updateTrackerUI } from './tracker.js';
+import { initDuas } from './duas.js';
+import { state } from './state.js';
 
 async function init() {
     // 1. Initialize all DOM refs (must be first, after DOMContentLoaded)
@@ -40,10 +44,108 @@ async function init() {
     if (yearEl) yearEl.textContent = new Date().getFullYear();
 
     // 9. Wire up countdown — api.js fires this after each prayer times fetch
-    document.addEventListener('prayerTimesLoaded', () => startCountdown());
+    document.addEventListener('prayerTimesLoaded', () => {
+        startCountdown();
+        initRamadanMode();    // Check Ramadan after timings load
+    });
 
     // 10. Detect & load location → triggers prayer times fetch
     await detectLocation();
+
+    // 11. New Islamic features
+    initTasbeeh();
+    initTracker();
+    initDuas();
+
+    // 12. Jumu'ah banner (Friday check)
+    initJumuahBanner();
+}
+
+/* ─── Jumu'ah Banner ─── */
+function initJumuahBanner() {
+    const banner = document.getElementById('jumuahBanner');
+    if (!banner) return;
+    const today = new Date();
+    if (today.getDay() === 5) {   // 5 = Friday
+        banner.style.display = 'flex';
+    }
+}
+
+/* ─── Ramadan / Sehri-Iftar Mode ─── */
+function initRamadanMode() {
+    // Hijri month 9 = Ramadan
+    const isRamadan = state.hijriMonth === 9;
+    const section   = document.getElementById('ramadanSection');
+    if (!section) return;
+    section.style.display = isRamadan ? 'block' : 'none';
+    if (!isRamadan) return;
+
+    // Fill Sehri (Imsak) and Iftar (Maghrib) times
+    const timings = state.todayTimings;
+    if (!timings) return;
+
+    const sehriEl = document.getElementById('sehriTime');
+    const iftarEl = document.getElementById('iftarTime');
+    if (sehriEl) sehriEl.textContent = formatTimeSI(timings.Imsak);
+    if (iftarEl) iftarEl.textContent = formatTimeSI(timings.Maghrib);
+
+    // Start countdown
+    startRamadanCountdown(timings);
+}
+
+function formatTimeSI(t) {
+    if (!t) return '--:--';
+    const [h, m] = t.replace(' (+ 1D)', '').split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function startRamadanCountdown(timings) {
+    clearInterval(window._ramadanTimer);
+    const labelEl     = document.getElementById('ramadanLabel');
+    const countdownEl = document.getElementById('ramadanCountdown');
+    const metaEl      = document.getElementById('ramadanMeta');
+
+    function parseTime(str) {
+        if (!str) return null;
+        const [h, m] = str.replace(' (+ 1D)', '').split(':').map(Number);
+        const now = new Date();
+        const t = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+        return t;
+    }
+
+    const sehri = parseTime(timings.Imsak);
+    const iftar = parseTime(timings.Maghrib);
+
+    window._ramadanTimer = setInterval(() => {
+        const now  = new Date();
+        let target, label;
+
+        if (now < sehri) {
+            target = sehri; label = 'Sehri Ends In';
+        } else if (now < iftar) {
+            target = iftar; label = 'Iftar In';
+        } else {
+            // Past Iftar — show next Sehri (next day, simplified)
+            label = 'Rozah Mubarak! 🌙';
+            if (countdownEl) countdownEl.textContent = '--:--:--';
+            if (labelEl) labelEl.textContent = label;
+            const day = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+            if (metaEl) metaEl.textContent = `${day} • Ramadan ${state.hijriMonth === 9 ? '' : ''}`;
+            return;
+        }
+
+        const diff = Math.max(0, target - now);
+        const hh = String(Math.floor(diff / 3600000)).padStart(2,'0');
+        const mm = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+        const ss = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+
+        if (countdownEl) countdownEl.textContent = `${hh}:${mm}:${ss}`;
+        if (labelEl) labelEl.textContent = label;
+
+        const hijriDay = state.hijriYear ? `${new Date().getDate()} Ramadan ${state.hijriYear} AH` : 'Ramadan Kareem';
+        if (metaEl) metaEl.textContent = hijriDay;
+    }, 1000);
 }
 
 // Start app after DOM is ready

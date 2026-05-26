@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { showToast } from './ui.js';
-import { PRAYER_ORDER, PRAYER_NAMES } from './constants.js';
+import { PRAYER_NAMES } from './constants.js';
 import { state } from './state.js';
 
 // Returns today's key: "2026-05-26"
