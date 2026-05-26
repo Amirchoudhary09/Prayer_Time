@@ -7,6 +7,31 @@ import { dom, $ } from './dom.js';
 import { API_BASE, MONTH_NAMES_EN, WEEKDAYS_EN, WEEKDAYS_UR, HIJRI_MONTHS_UR, PRAYER_ORDER, toUrduNumber } from './constants.js';
 import { formatTime } from './ui.js';
 
+// ─── Islamic festival emoji map ───
+const FESTIVAL_ICONS = {
+    'Eid al-Fitr':          '🎉',
+    'Eid al-Adha':          '🐑',
+    'Laylat al-Qadr':       '✨',
+    'Laylat al-Bara\'at':   '🌙',
+    'Laylat al-Miraj':      '🌠',
+    'Islamic New Year':      '🌙',
+    'Al-Hijra':             '🌙',
+    'Muharram':             '🕌',
+    'Ashura':               '🕌',
+    'Mawlid al-Nabi':       '💚',
+    'Mawlid':               '💚',
+    'Ramadan':              '🌙',
+    'Arafat':               '🕋',
+    'default':              '🌟'
+};
+
+function getFestivalIcon(name) {
+    for (const [key, icon] of Object.entries(FESTIVAL_ICONS)) {
+        if (name.toLowerCase().includes(key.toLowerCase())) return icon;
+    }
+    return FESTIVAL_ICONS.default;
+}
+
 // ─── Open / Close ───
 export function openCalendarModal() {
     renderCalendar();
@@ -73,7 +98,7 @@ async function renderGregorianCalendar() {
     for (let i = firstDay - 1; i >= 0; i--) {
         const pm = month === 0 ? 11 : month - 1;
         const py = month === 0 ? year - 1 : year;
-        container.appendChild(createDayCell(daysInPrev - i, true, false, false, `${daysInPrev - i}-${pm + 1}-${py}`));
+        container.appendChild(createDayCell(daysInPrev - i, true, false, false, `${daysInPrev - i}-${pm + 1}-${py}`, []));
     }
     // Current month
     for (let d = 1; d <= daysInMonth; d++) {
@@ -88,7 +113,7 @@ async function renderGregorianCalendar() {
     for (let d = 1; d <= fill; d++) {
         const nm = month === 11 ? 0  : month + 1;
         const ny = month === 11 ? year + 1 : year;
-        container.appendChild(createDayCell(d, true, false, false, `${d}-${nm + 1}-${ny}`));
+        container.appendChild(createDayCell(d, true, false, false, `${d}-${nm + 1}-${ny}`, []));
     }
 }
 
@@ -99,17 +124,23 @@ function createDayCell(dayNum, isOtherMonth, isToday, isFriday, dateStr, holiday
     if (isOtherMonth)              cell.classList.add('other-month');
     if (isToday)                   cell.classList.add('today');
     if (isFriday && !isOtherMonth) cell.classList.add('friday');
+
+    // Show holiday dot/badge on the cell
     if (holidays.length > 0) {
+        cell.classList.add('has-festival');
         const hSpan = document.createElement('div');
         hSpan.className = 'cal-holiday';
-        hSpan.textContent = holidays.join(', ');
+        hSpan.textContent = holidays.map(h => getFestivalIcon(h)).join(' ');
         cell.appendChild(hSpan);
         cell.style.position = 'relative';
+        cell.title = holidays.join(' • ');
     }
+
     cell.addEventListener('click', () => {
         document.querySelectorAll('.cal-day.selected').forEach(el => el.classList.remove('selected'));
         cell.classList.add('selected');
-        openDatePrayerModal(dateStr);
+        // Pass holidays so modal can show them immediately (no need to re-fetch)
+        openDatePrayerModal(dateStr, holidays);
     });
     return cell;
 }
@@ -157,14 +188,18 @@ async function renderHijriCalendar() {
             cell.textContent = toUrduNumber(hijriDay);
             if (gregDateStr === todayStr) cell.classList.add('today');
             if (gregDate.getDay() === 5)  cell.classList.add('friday');
-            const holidays = dayData.date.hijri.holidays;
-            if (holidays?.length) {
+
+            const holidays = dayData.date.hijri.holidays || [];
+            if (holidays.length > 0) {
+                cell.classList.add('has-festival');
                 const hSpan = document.createElement('div');
                 hSpan.className = 'cal-holiday';
-                hSpan.textContent = holidays.join(', ');
+                hSpan.textContent = holidays.map(h => getFestivalIcon(h)).join(' ');
                 cell.appendChild(hSpan);
                 cell.style.position = 'relative';
+                cell.title = holidays.join(' • ');
             }
+
             cell.dataset.hijriIndex = index;
             cell.dataset.gregDate   = gregDateStr;
             cell.addEventListener('click', () => {
@@ -180,14 +215,38 @@ async function renderHijriCalendar() {
     }
 }
 
-// ─── Date Prayer Times Popup ───
-export async function openDatePrayerModal(dateStr) {
+// ─── Show / Hide festival banner in modal ───
+function showFestivalBanner(holidays) {
+    const row    = $('dpFestivalRow');
+    const banner = $('dpFestivalBanner');
+    if (!row || !banner) return;
+
+    if (!holidays || holidays.length === 0) {
+        row.style.display = 'none';
+        banner.innerHTML  = '';
+        return;
+    }
+
+    row.style.display = 'block';
+    banner.innerHTML  = holidays.map(h => `
+        <div class="dp-festival-item">
+            <span class="dp-festival-icon">${getFestivalIcon(h)}</span>
+            <span class="dp-festival-name">${h}</span>
+        </div>
+    `).join('');
+}
+
+// ─── Date Prayer Times Popup (Gregorian) ───
+export async function openDatePrayerModal(dateStr, knownHolidays = []) {
     const [d, m, y] = dateStr.split('-').map(Number);
     const dateObj = new Date(y, m - 1, d);
     const weekday = dateObj.toLocaleDateString('en-US', { weekday: 'long' });
     if (dom.dateModalTitle)    dom.dateModalTitle.textContent    = `${weekday}, ${MONTH_NAMES_EN[m - 1]} ${d}`;
     if (dom.dateModalSubtitle) dom.dateModalSubtitle.textContent = `${d}/${m}/${y} • ${state.city}`;
     if (dom.datePrayerModal) { dom.datePrayerModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+
+    // Show known holidays immediately (no wait)
+    showFestivalBanner(knownHolidays);
 
     PRAYER_ORDER.forEach(key => {
         const te = document.getElementById(`dp-time-${key}`);
@@ -212,6 +271,12 @@ export async function openDatePrayerModal(dateStr) {
                 if (pe) pe.classList.remove('loading');
             });
             if (dom.dpHijriValue) dom.dpHijriValue.textContent = `${h.day} ${h.month.en} ${h.year} AH`;
+
+            // Update holidays from API response if not already known
+            const apiHolidays = h.holidays || [];
+            if (apiHolidays.length > 0 && knownHolidays.length === 0) {
+                showFestivalBanner(apiHolidays);
+            }
         }
     } catch (err) {
         console.error('Date prayer times failed:', err);
@@ -225,6 +290,7 @@ export async function openDatePrayerModal(dateStr) {
     }
 }
 
+// ─── Date Prayer Times Popup (Hijri cache) ───
 function openDatePrayerModalWithData(dayData) {
     const hijri = dayData.date.hijri;
     const greg  = dayData.date.gregorian;
@@ -233,6 +299,7 @@ function openDatePrayerModalWithData(dayData) {
     if (dom.dateModalTitle)    dom.dateModalTitle.textContent    = `${toUrduNumber(hijri.day)} ${hijriMonthUr} ${toUrduNumber(hijri.year)}`;
     if (dom.dateModalSubtitle) dom.dateModalSubtitle.textContent = `${greg.day} ${greg.month.en} ${greg.year} • ${state.city}`;
     if (dom.datePrayerModal) { dom.datePrayerModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+
     const map = { fajr: t.Fajr, sunrise: t.Sunrise, dhuhr: t.Dhuhr, asr: t.Asr, maghrib: t.Maghrib, isha: t.Isha };
     PRAYER_ORDER.forEach(key => {
         const te = document.getElementById(`dp-time-${key}`);
@@ -241,9 +308,14 @@ function openDatePrayerModalWithData(dayData) {
         if (pe) pe.classList.remove('loading');
     });
     if (dom.dpHijriValue) dom.dpHijriValue.textContent = `${hijri.day} ${hijri.month.en} ${hijri.year} AH`;
+
+    // Show holidays/festival names
+    showFestivalBanner(hijri.holidays || []);
 }
 
 export function closeDateModal() {
     if (dom.datePrayerModal) dom.datePrayerModal.classList.remove('active');
+    // Reset festival banner when closing
+    showFestivalBanner([]);
     document.body.style.overflow = '';
 }

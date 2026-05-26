@@ -985,15 +985,24 @@ body {
 
 .cal-holiday {
     position: absolute;
-    bottom: 2px;
-    font-size: 0.5rem;
-    color: var(--accent);
+    bottom: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
     text-align: center;
-    width: 90%;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     line-height: 1;
+    letter-spacing: -1px;
+    pointer-events: none;
+}
+
+/* Glowing ring on festival cells */
+.cal-day.has-festival {
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.5), 0 0 10px rgba(212, 175, 55, 0.2);
+    background: rgba(212, 175, 55, 0.07);
+}
+.cal-day.has-festival:hover {
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.8), 0 0 16px rgba(212, 175, 55, 0.35);
 }
 
 .cal-day:hover {
@@ -1180,6 +1189,57 @@ body {
     border-radius: 4px;
     color: transparent;
     min-width: 70px;
+}
+
+/* ─── Festival / Holiday Banner in Date Modal ─── */
+.dp-festival-row {
+    margin-top: var(--gap-sm);
+}
+
+.dp-festival-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.05));
+    border: 1px solid rgba(212,175,55,0.35);
+    border-radius: var(--radius-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.dp-festival-banner::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.dp-festival-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.4s ease;
+}
+
+.dp-festival-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px rgba(212,175,55,0.6));
+    flex-shrink: 0;
+}
+
+.dp-festival-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--accent-light);
+    letter-spacing: 0.02em;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ---------- Settings Modal ---------- */
