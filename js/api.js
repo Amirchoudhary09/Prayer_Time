@@ -61,11 +61,16 @@ export function initDeviceCompass() {
         showToast('❌ Compass not supported on this device'); return;
     }
     const activate = () => {
-        window.addEventListener('deviceorientation', handleOrientation);
+        window.addEventListener('deviceorientation', handleOrientation, { passive: true });
         state.isCompassActive = true;
         const btn = $('enableCompassBtn');
         if (btn) btn.style.display = 'none';
-        showToast('🧭 Compass active');
+        // Show phone heading stat block
+        const headingBlock = $('headingStatBlock');
+        if (headingBlock) headingBlock.style.display = 'flex';
+        const accBar = $('qiblaAccuracyBar');
+        if (accBar) accBar.style.display = 'flex';
+        showToast('🧭 Compass active — rotate your phone!');
     };
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
@@ -76,13 +81,101 @@ export function initDeviceCompass() {
     }
 }
 
-function handleOrientation(e) {
-    let alpha = e.webkitCompassHeading || (360 - (e.alpha || 0));
-    if (alpha === null) return;
-    const rotation = state.qiblaAngle - alpha;
-    if (dom.compassNeedle) dom.compassNeedle.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+// ─── Smooth compass state ───
+let _currentNeedleAngle = 0;  // current rendered needle angle
+let _currentRingAngle   = 0;  // current rendered ring angle
+let _targetNeedleAngle  = 0;
+let _targetRingAngle    = 0;
+let _rafId              = null;
+let _rawHeading         = 0;  // raw device heading (degrees from North, clockwise)
+
+// Short-path interpolation: avoids 350→10 going the long way round
+function shortPath(current, target) {
+    let diff = target - current;
+    while (diff >  180) diff -= 360;
+    while (diff < -180) diff += 360;
+    return current + diff;
+}
+
+// Smooth lerp factor
+const LERP = 0.12; // smaller = smoother but slower; 0.12 = good balance
+
+function smoothCompassLoop() {
+    // Lerp needle
+    _currentNeedleAngle += (_targetNeedleAngle - _currentNeedleAngle) * LERP;
+    _currentRingAngle   += (_targetRingAngle   - _currentRingAngle)   * LERP;
+
+    if (dom.compassNeedle) {
+        dom.compassNeedle.style.transform = `translate(-50%, -50%) rotate(${_currentNeedleAngle}deg)`;
+    }
     const ring = document.querySelector('.compass-ring');
-    if (ring) ring.style.transform = `rotate(${-alpha}deg)`;
+    if (ring) {
+        ring.style.transform = `rotate(${_currentRingAngle}deg)`;
+    }
+
+    _rafId = requestAnimationFrame(smoothCompassLoop);
+}
+
+function handleOrientation(e) {
+    // webkitCompassHeading = iOS (always clockwise from North)
+    // alpha = Android (anti-clockwise, so we invert)
+    let heading = 0;
+    if (e.webkitCompassHeading != null && e.webkitCompassHeading !== 0) {
+        heading = e.webkitCompassHeading;
+    } else if (e.alpha != null) {
+        heading = (360 - e.alpha) % 360;
+    } else {
+        return;
+    }
+
+    _rawHeading = heading;
+
+    // Update phone heading display
+    const headingEl = $('phoneHeading');
+    if (headingEl) headingEl.textContent = Math.round(heading) + '°';
+
+    // Needle points to Qibla relative to North, minus current heading
+    const needleTarget = state.qiblaAngle - heading;
+    const ringTarget   = -heading;
+
+    // Use short-path to set smooth targets
+    _targetNeedleAngle = shortPath(_currentNeedleAngle, needleTarget);
+    _targetRingAngle   = shortPath(_currentRingAngle,   ringTarget);
+
+    // Update accuracy bar (how close phone is facing Qibla)
+    const diff = Math.abs(((needleTarget % 360) + 360) % 360);
+    const normalizedDiff = diff > 180 ? 360 - diff : diff; // 0=perfect, 180=opposite
+    const accuracy = Math.max(0, 100 - (normalizedDiff / 180 * 100));
+    updateAccuracyBar(accuracy, normalizedDiff);
+
+    // Start RAF loop if not running
+    if (!_rafId) {
+        _currentNeedleAngle = needleTarget;
+        _currentRingAngle   = ringTarget;
+        _rafId = requestAnimationFrame(smoothCompassLoop);
+    }
+}
+
+function updateAccuracyBar(accuracy, diffDeg) {
+    const fill  = $('qiblaAccuracyFill');
+    const label = $('qiblaAccuracyLabel');
+    if (!fill || !label) return;
+
+    fill.style.width = `${accuracy}%`;
+
+    if (diffDeg < 5) {
+        fill.style.background = '#4ade80';
+        label.textContent = '✅ Facing Qibla!';
+    } else if (diffDeg < 15) {
+        fill.style.background = '#86efac';
+        label.textContent = `↻ Almost! ${Math.round(diffDeg)}° off`;
+    } else if (diffDeg < 45) {
+        fill.style.background = '#fbbf24';
+        label.textContent = `↻ Rotate ${Math.round(diffDeg)}° towards Qibla`;
+    } else {
+        fill.style.background = 'var(--accent)';
+        label.textContent = `Point towards Qibla (${Math.round(diffDeg)}° off)`;
+    }
 }
 
 // ─── Reverse Geocode ───

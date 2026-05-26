@@ -755,19 +755,84 @@ body {
     top: 50%;
     left: 50%;
     transform-origin: center center;
-    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Smooth via JS requestAnimationFrame — CSS transition removed to avoid jerks */
+    will-change: transform;
 }
 
 .needle-head {
     font-size: 1.8rem;
     transform: translate(-50%, -90px);
     filter: drop-shadow(0 0 10px var(--accent-glow));
+    pointer-events: none;
 }
+
 
 .qibla-info {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
+/* Two-column stats: Qibla angle | Phone heading */
+.qibla-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: center;
+}
+.qibla-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.qibla-stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+}
+.qibla-stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+.qibla-stat-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--glass-border);
+}
+
+/* Accuracy bar */
+.qibla-accuracy-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    max-width: 200px;
+}
+.accuracy-fill {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 0.3s ease, background 0.5s;
+    align-self: flex-start;
+    width: 0%;
+    max-width: 100%;
+    min-width: 4px;
+}
+.accuracy-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    transition: color 0.3s;
+    text-align: center;
+}
+
+/* Legacy .qibla-degrees class (now inside .qibla-stat-value) */
 .qibla-degrees {
     font-size: 2rem;
     font-weight: 800;

@@ -79,6 +79,25 @@
             </div>
         </section>
 
+        <!-- Jumu'ah Banner (shown only on Fridays) -->
+        <div class="jumuah-banner" id="jumuahBanner" style="display:none;">
+            <span class="jumuah-icon">🕌</span>
+            <div class="jumuah-text">
+                <strong>Jumu'ah Mubarak!</strong>
+                <span>جمعہ مبارک — Today is Friday</span>
+            </div>
+            <span class="jumuah-star">✨</span>
+        </div>
+
+        <!-- Prayer Tracker Summary Bar -->
+        <div class="tracker-summary" id="trackerSummary">
+            <span class="tracker-label">🕌 Today's Prayers:</span>
+            <span class="tracker-count" id="trackerCount">0/5</span>
+            <div class="tracker-bar-bg">
+                <div class="tracker-bar" id="trackerBar" style="width:0%"></div>
+            </div>
+        </div>
+
         <!-- Current Prayer / Next Prayer Hero -->
         <section class="hero-section" id="heroSection">
             <div class="hero-card glass-card" id="heroCard" style="cursor: pointer;" title="Click to view all today's times">
@@ -132,6 +151,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-fajr">--:--</div>
                     <div class="prayer-card-status" id="status-fajr"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
                 <!-- Sunrise -->
                 <div class="prayer-card glass-card" data-prayer="sunrise" id="card-sunrise">
@@ -142,6 +162,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-sunrise">--:--</div>
                     <div class="prayer-card-status" id="status-sunrise"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
                 <!-- Dhuhr -->
                 <div class="prayer-card glass-card" data-prayer="dhuhr" id="card-dhuhr">
@@ -152,6 +173,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-dhuhr">--:--</div>
                     <div class="prayer-card-status" id="status-dhuhr"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
                 <!-- Asr -->
                 <div class="prayer-card glass-card" data-prayer="asr" id="card-asr">
@@ -162,6 +184,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-asr">--:--</div>
                     <div class="prayer-card-status" id="status-asr"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
                 <!-- Maghrib -->
                 <div class="prayer-card glass-card" data-prayer="maghrib" id="card-maghrib">
@@ -172,6 +195,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-maghrib">--:--</div>
                     <div class="prayer-card-status" id="status-maghrib"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
                 <!-- Isha -->
                 <div class="prayer-card glass-card" data-prayer="isha" id="card-isha">
@@ -182,6 +206,7 @@
                     </div>
                     <div class="prayer-card-time" id="time-isha">--:--</div>
                     <div class="prayer-card-status" id="status-isha"></div>
+                    <span class="prayer-edit-hint">✏️</span>
                 </div>
             </div>
             
@@ -225,11 +250,96 @@
                     </div>
                 </div>
                 <div class="qibla-info">
-                    <div class="qibla-degrees" id="qiblaDegrees">--°</div>
-                    <div class="qibla-label">from North</div>
-                    <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;" data-i18n="enableCompass">Enable Device Compass</button>
+                    <div class="qibla-stats-row">
+                        <div class="qibla-stat">
+                            <div class="qibla-stat-value" id="qiblaDegrees">--°</div>
+                            <div class="qibla-stat-label">🕋 Qibla Direction</div>
+                        </div>
+                        <div class="qibla-stat-divider"></div>
+                        <div class="qibla-stat" id="headingStatBlock" style="display:none;">
+                            <div class="qibla-stat-value" id="phoneHeading">--°</div>
+                            <div class="qibla-stat-label">📱 Phone Facing</div>
+                        </div>
+                    </div>
+                    <div class="qibla-accuracy-bar" id="qiblaAccuracyBar" style="display:none;">
+                        <div class="accuracy-fill" id="qiblaAccuracyFill"></div>
+                        <span class="accuracy-label" id="qiblaAccuracyLabel">Point towards Qibla</span>
+                    </div>
+                    <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;" data-i18n="enableCompass">🧭 Enable Live Compass</button>
+                    <p class="qibla-calibration-hint">📐 To calibrate: move your phone in a figure-8 motion</p>
                 </div>
             </div>
+        </section>
+
+        <!-- Sehri / Iftar Countdown Card (shown during Ramadan) -->
+        <section class="ramadan-section" id="ramadanSection" style="display:none;">
+            <h2 class="section-title">
+                <span>🌙 Ramadan</span>
+                <span class="section-line"></span>
+            </h2>
+            <div class="ramadan-card glass-card">
+                <div class="ramadan-meta" id="ramadanMeta">Ramadan Kareem</div>
+                <div class="ramadan-label" id="ramadanLabel">Iftar In</div>
+                <div class="ramadan-countdown" id="ramadanCountdown">--:--:--</div>
+                <div class="ramadan-times">
+                    <div class="ramadan-time-item">
+                        <span class="ramadan-time-label">🌅 Sehri (Imsak)</span>
+                        <span class="ramadan-time-val" id="sehriTime">--:--</span>
+                    </div>
+                    <div class="ramadan-time-item">
+                        <span class="ramadan-time-label">🌅 Iftar (Maghrib)</span>
+                        <span class="ramadan-time-val" id="iftarTime">--:--</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tasbeeh Counter -->
+        <section class="tasbeeh-section" id="tasbeehSection">
+            <h2 class="section-title">
+                <span>📿 Digital Tasbeeh</span>
+                <span class="section-line"></span>
+            </h2>
+            <div class="tasbeeh-card glass-card">
+                <!-- Ring + Counter -->
+                <div class="tasbeeh-ring-wrap" id="tasbeehTapArea" title="Tap to count — Long press to reset">
+                    <svg class="tasbeeh-svg" viewBox="0 0 120 120">
+                        <circle class="ring-bg"  cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+                        <circle class="ring-fg" id="tasbeehRing" cx="60" cy="60" r="54" fill="none" stroke-width="8"
+                            stroke-linecap="round" transform="rotate(-90 60 60)"
+                            style="stroke-dasharray:339;stroke-dashoffset:339;transition:stroke-dashoffset 0.3s,stroke 0.3s;"/>
+                    </svg>
+                    <div class="tasbeeh-count-wrap">
+                        <span class="tasbeeh-count" id="tasbeehCount">0</span>
+                        <span class="tasbeeh-target" id="tasbeehTarget">/33</span>
+                    </div>
+                </div>
+                <!-- Label -->
+                <div class="tasbeeh-phrase">
+                    <div class="tasbeeh-label" id="tasbeehLabel">سُبْحَانَ اللّٰہ</div>
+                    <div class="tasbeeh-trans" id="tasbeehTrans">SubhanAllah</div>
+                </div>
+                <!-- Reset -->
+                <button class="setting-btn tasbeeh-reset-btn" id="tasbeehResetBtn">🔄 Reset</button>
+                <!-- Presets -->
+                <div class="tasbeeh-presets" id="tasbeehPresets"></div>
+            </div>
+        </section>
+
+        <!-- Masnoon Duas Section -->
+        <section class="duas-section">
+            <h2 class="section-title">
+                <span>🤲 Masnoon Duas</span>
+                <span class="section-line"></span>
+            </h2>
+            <button class="duas-open-btn glass-card" id="duasOpenBtn">
+                <span class="duas-btn-icon">📖</span>
+                <div class="duas-btn-text">
+                    <strong>Dua Collection</strong>
+                    <span>Morning, Evening, After Prayer, Food, Travel & more</span>
+                </div>
+                <span class="duas-btn-arrow">›</span>
+            </button>
         </section>
 
         <!-- Calendar Modal -->
@@ -574,6 +684,22 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn-primary" id="saveSettingsBtn">Save & Apply</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Duas Collection Modal -->
+        <div class="modal-overlay" id="duasModal">
+            <div class="modal glass-card duas-modal">
+                <div class="modal-header">
+                    <h2>🤲 Masnoon Duas</h2>
+                    <button class="modal-close" id="duasCloseBtn" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body" style="padding:0;">
+                    <!-- Category Tabs -->
+                    <div class="duas-category-tabs" id="duasCategoryTabs"></div>
+                    <!-- Duas List -->
+                    <div class="duas-list" id="duasList"></div>
                 </div>
             </div>
         </div>
