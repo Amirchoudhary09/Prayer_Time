@@ -2049,3 +2049,125 @@ body {
     opacity: 0.7;
     text-align: center;
 }
+
+/* --------------------------------------------
+   ?? TASBEEH — Mode Tabs & Custom Panel
+-------------------------------------------- */
+.tasbeeh-mode-tabs {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    max-width: 340px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 4px;
+}
+.tasbeeh-mode-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.tasbeeh-mode-tab.active {
+    background: var(--glass-hover);
+    color: var(--accent-light);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.tasbeeh-mode-tab:hover:not(.active) { color: var(--text-primary); }
+
+/* Custom Panel */
+.tasbeeh-custom-panel {
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+    max-width: 340px;
+}
+.custom-field { display: flex; flex-direction: column; gap: 6px; }
+.custom-label-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.03em;
+}
+.custom-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.custom-input:focus { border-color: var(--accent); }
+.custom-target-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.custom-target-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--glass-border);
+    background: var(--glass-bg);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.custom-target-btn:hover { background: var(--glass-hover); border-color: var(--accent); }
+.custom-target-input {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 0;  /* flex-grows */
+    flex: 1;
+}
+/* Remove number input spinners */
+.custom-target-input::-webkit-outer-spin-button,
+.custom-target-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.custom-target-input[type=number] { -moz-appearance: textfield; }
+
+.custom-quick-targets {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+.custom-quick-btn {
+    padding: 4px 10px;
+    border-radius: 16px;
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.custom-quick-btn:hover  { background: var(--glass-hover); color: var(--text-primary); }
+.custom-quick-btn.active { background: rgba(212,175,55,0.15); border-color: var(--accent); color: var(--accent-light); font-weight: 700; }
+
+.custom-start-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    background: linear-gradient(135deg, rgba(56,189,248,0.2), rgba(56,189,248,0.08));
+    border-color: rgba(56,189,248,0.4);
+    color: #38bdf8;
+}
+.custom-start-btn:hover {
+    background: linear-gradient(135deg, rgba(56,189,248,0.3), rgba(56,189,248,0.15));
+    transform: translateY(-1px);
+}

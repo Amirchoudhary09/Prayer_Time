@@ -301,7 +301,11 @@
                 <span class="section-line"></span>
             </h2>
             <div class="tasbeeh-card glass-card">
-                <!-- Ring + Counter -->
+
+                <!-- Mode Tabs: Presets | Custom -->
+                <div class="tasbeeh-mode-tabs" id="tasbeehModeTabs"></div>
+
+                <!-- Ring + Counter (always visible) -->
                 <div class="tasbeeh-ring-wrap" id="tasbeehTapArea" title="Tap to count — Long press to reset">
                     <svg class="tasbeeh-svg" viewBox="0 0 120 120">
                         <circle class="ring-bg"  cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
@@ -314,15 +318,22 @@
                         <span class="tasbeeh-target" id="tasbeehTarget">/33</span>
                     </div>
                 </div>
-                <!-- Label -->
+
+                <!-- Label (dhikr name) -->
                 <div class="tasbeeh-phrase">
                     <div class="tasbeeh-label" id="tasbeehLabel">سُبْحَانَ اللّٰہ</div>
                     <div class="tasbeeh-trans" id="tasbeehTrans">SubhanAllah</div>
                 </div>
-                <!-- Reset -->
+
+                <!-- Reset button -->
                 <button class="setting-btn tasbeeh-reset-btn" id="tasbeehResetBtn">🔄 Reset</button>
-                <!-- Presets -->
+
+                <!-- Presets grid (shown in Preset mode) -->
                 <div class="tasbeeh-presets" id="tasbeehPresets"></div>
+
+                <!-- Custom Panel (shown in Custom mode) -->
+                <div class="tasbeeh-custom-panel" id="tasbeehCustomPanel" style="display:none;"></div>
+
             </div>
         </section>
 
