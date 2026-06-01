@@ -65,7 +65,6 @@ export async function switchToLocation(loc) {
     state.lat = loc.lat; state.lng = loc.lng;
     state.city = loc.city; state.country = loc.country;
     if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-    saveCurrentLocationToHistory();
     state.hijriCalData = null;
     closeLocManagerModal();
     showToast(`📍 ${state.city} set!`);
