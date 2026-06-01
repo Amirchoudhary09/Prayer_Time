@@ -8,12 +8,14 @@ const DUAS = [
       arabic: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ...',
       trans:  'Asbahna wa asbahal mulku lillah, wal hamdu lillah...',
       meaning: 'We have entered the morning and the dominion belongs to Allah...',
+      when: 'Read after Fajr prayer until sunrise.',
       ref: 'Abu Dawud 5071'
     },
     { id: 'morning2', cat: 'morning', icon: '🌅',
       arabic: 'اللّٰهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا وَبِكَ نَحْيَا وَبِكَ نَمُوتُ',
       trans:  'Allahumma bika asbahna wa bika amsayna wa bika nahya wa bika namutu',
       meaning: 'O Allah, by You we enter the morning, by You we enter the evening, by You we live and by You we die.',
+      when: 'Recite once every morning.',
       ref: 'Tirmidhi 3391'
     },
     // ─── Evening (Shaam) ───
@@ -21,12 +23,14 @@ const DUAS = [
       arabic: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ',
       trans:  'Amsayna wa amsal mulku lillah wal hamdu lillah',
       meaning: 'We have entered the evening and the dominion belongs to Allah, and all praise is due to Allah.',
+      when: 'Read after Asr prayer until sunset.',
       ref: 'Muslim 2723'
     },
     { id: 'evening2', cat: 'evening', icon: '🌙',
       arabic: 'اللّٰهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ وَأُشْهِدُ حَمَلَةَ عَرْشِكَ',
       trans:  'Allahumma inni amsaytu ush-hiduka wa ush-hidu hamalata arshika',
       meaning: 'O Allah, I have reached the evening calling You to witness, and calling to witness the bearers of Your Throne.',
+      when: 'Recite 4 times in the evening to be freed from Hellfire.',
       ref: 'Abu Dawud 5069'
     },
     // ─── After Prayer ───
@@ -159,11 +163,13 @@ function renderDuas(catId) {
     filtered.forEach(dua => {
         const card = document.createElement('div');
         card.className = 'dua-card glass-card';
+        const whenHtml = dua.when ? `<div style="font-size:0.75rem; color:var(--primary-light); margin-bottom:8px; font-weight:600;">🕒 ${dua.when}</div>` : '';
         card.innerHTML = `
             <div class="dua-header">
                 <span class="dua-icon">${dua.icon}</span>
                 <span class="dua-ref">${dua.ref}</span>
             </div>
+            ${whenHtml}
             <div class="dua-arabic">${dua.arabic}</div>
             <div class="dua-trans">${dua.trans}</div>
             <div class="dua-meaning">${dua.meaning}</div>

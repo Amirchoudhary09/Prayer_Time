@@ -255,7 +255,7 @@ export function bindEvents() {
         // Deactivate all nav items
         navItems.forEach(btn => btn.classList.remove('active'));
 
-        if (tabId) {
+        if (tabId && tabId !== 'home') {
             // Show selected tab
             const tab = $(tabId);
             if (tab) tab.classList.add('active');
@@ -267,6 +267,8 @@ export function bindEvents() {
         } else {
             // Show home (prayer times)
             homeContent.forEach(el => { if (el && !el.closest('.tab-section')) el.style.display = ''; });
+            const homeBtn = document.querySelector('[data-tab="home"]');
+            if (homeBtn) homeBtn.classList.add('active');
         }
 
         // Scroll to top
@@ -277,9 +279,9 @@ export function bindEvents() {
     navItems.forEach(btn => {
         btn.addEventListener('click', () => {
             const tabId = btn.dataset.tab;
-            if (btn.classList.contains('active')) {
+            if (btn.classList.contains('active') && tabId !== 'home') {
                 // Tapping active tab = go home
-                switchTab(null);
+                switchTab('home');
             } else {
                 switchTab(tabId);
             }
@@ -317,7 +319,7 @@ export function bindEvents() {
 
     // Profile → Language (reuse existing lang modal)
     on('profileLangBtn', 'click', () => {
-        const langModal = $('languageModal');
+        const langModal = $('langModal');
         if (langModal) { langModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
     });
 
@@ -329,6 +331,7 @@ export function bindEvents() {
 
     // Profile → Refresh Data
     on('profileUpdateBtn', 'click', () => {
+        switchTab('home');
         detectLocation();
         showToast('🔄 Refreshing prayer times...');
     });
