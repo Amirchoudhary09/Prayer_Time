@@ -128,26 +128,8 @@ const CATEGORIES = [
 let activeCat = 'all';
 
 export function initDuas() {
-    const openBtn  = document.getElementById('duasOpenBtn');
-    const closeBtn = document.getElementById('duasCloseBtn');
-    const modal    = document.getElementById('duasModal');
-
-    if (openBtn) openBtn.addEventListener('click', openDuasModal);
-    if (closeBtn) closeBtn.addEventListener('click', closeDuasModal);
-    if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeDuasModal(); });
-}
-
-function openDuasModal() {
-    const modal = document.getElementById('duasModal');
-    if (modal) { modal.classList.add('active'); document.body.style.overflow = 'hidden'; }
     renderCategoryTabs();
     renderDuas('all');
-}
-
-function closeDuasModal() {
-    const modal = document.getElementById('duasModal');
-    if (modal) modal.classList.remove('active');
-    document.body.style.overflow = '';
 }
 
 function renderCategoryTabs() {

@@ -6,8 +6,8 @@
     <meta name="description" content="Beautiful Muslim Prayer Times App - Get accurate Salah timings based on your location with Qibla direction, Hijri calendar, and countdown timer.">
     <meta name="theme-color" content="#2c6c5a">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <link rel="apple-touch-icon" href="icon.svg">
+    <link rel="icon" type="image/svg+xml" href="icon.svg?v=5">
+    <link rel="apple-touch-icon" href="icon.svg?v=5">
     <title>Prayer Times - Salah Timings</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@
         <header class="app-header" id="appHeader">
             <div class="header-content">
                 <div class="header-left">
-                    <div class="crescent-icon">☪</div>
+                    <img src="icon.svg?v=5" alt="Logo" style="width: 36px; height: 36px; margin-right: 12px; filter: drop-shadow(0 0 8px rgba(212,175,55,0.4));">
                     <div class="header-text">
                         <h1 id="appTitle" data-i18n="appTitle">Prayer Times</h1>
                         <p class="arabic-subtitle" id="arabicSubtitle">أوقات الصلاة</p>
@@ -337,14 +337,10 @@
                 <span>🤲 Masnoon Duas</span>
                 <span class="section-line"></span>
             </h2>
-            <button class="duas-open-btn glass-card" id="duasOpenBtn">
-                <span class="duas-btn-icon">📖</span>
-                <div class="duas-btn-text">
-                    <strong>Dua Collection</strong>
-                    <span>Morning, Evening, After Prayer, Food, Travel & more</span>
-                </div>
-                <span class="duas-btn-arrow">›</span>
-            </button>
+            <!-- Category Tabs -->
+            <div class="duas-category-tabs" id="duasCategoryTabs"></div>
+            <!-- Duas List -->
+            <div class="duas-list" id="duasList"></div>
         </section>
         </div><!-- /duaTab -->
 
@@ -709,21 +705,7 @@
             </div>
         </div>
 
-        <!-- Duas Collection Modal -->
-        <div class="modal-overlay" id="duasModal">
-            <div class="modal glass-card duas-modal">
-                <div class="modal-header">
-                    <h2>🤲 Masnoon Duas</h2>
-                    <button class="modal-close" id="duasCloseBtn" aria-label="Close">&times;</button>
-                </div>
-                <div class="modal-body" style="padding:0;">
-                    <!-- Category Tabs -->
-                    <div class="duas-category-tabs" id="duasCategoryTabs"></div>
-                    <!-- Duas List -->
-                    <div class="duas-list" id="duasList"></div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Language Selection Modal -->
         <div class="modal-overlay" id="langModal">
