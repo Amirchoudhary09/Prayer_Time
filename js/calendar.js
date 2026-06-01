@@ -104,7 +104,9 @@ async function renderGregorianCalendar() {
     for (let d = 1; d <= daysInMonth; d++) {
         const isToday = (d === tD && month === tM && year === tY);
         const dow = new Date(year, month, d).getDay();
-        const holidays = monthData?.[d - 1]?.date?.hijri?.holidays || [];
+        const hijriHolidays = monthData?.[d - 1]?.date?.hijri?.holidays || [];
+        const englishHolidays = getEnglishHolidays(d, month + 1);
+        const holidays = [...hijriHolidays, ...englishHolidays];
         container.appendChild(createDayCell(d, false, isToday, dow === 5, `${d}-${month + 1}-${year}`, holidays));
     }
     // Fill remaining
@@ -143,6 +145,18 @@ function createDayCell(dayNum, isOtherMonth, isToday, isFriday, dateStr, holiday
         openDatePrayerModal(dateStr, holidays);
     });
     return cell;
+}
+
+function getEnglishHolidays(day, month) {
+    const d = `${day}-${month}`;
+    const holidays = [];
+    if (d === '1-1') holidays.push('New Year');
+    if (d === '14-2') holidays.push('Valentine\'s Day');
+    if (d === '8-3') holidays.push('Women\'s Day');
+    if (d === '1-5') holidays.push('Labour Day');
+    if (d === '31-10') holidays.push('Halloween');
+    if (d === '25-12') holidays.push('Christmas');
+    return holidays;
 }
 
 // ─── Hijri Calendar ───
