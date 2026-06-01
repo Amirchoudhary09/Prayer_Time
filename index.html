@@ -17,6 +17,19 @@
     <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+    <script>
+        if (window.location.search.includes('clear=1')) {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(regs => {
+                    for (let reg of regs) reg.unregister();
+                });
+            }
+            caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+                .then(() => {
+                    window.location.href = window.location.pathname;
+                });
+        }
+    </script>
     <!-- Animated Background -->
     <div class="bg-gradient" id="bgGradient"></div>
     <div class="stars" id="stars"></div>

@@ -6,9 +6,9 @@
    • Other APIs (geocode, ipapi) → Network-First + Cache fallback
    ============================================================ */
 
-const CACHE_NAME   = 'prayer-times-v5';
-const API_CACHE    = 'prayer-api-v5';
-const CACHE_VERSION = 5;
+const CACHE_NAME   = 'prayer-times-v6';
+const API_CACHE    = 'prayer-api-v6';
+const CACHE_VERSION = 6;
 
 // All app shell files that must be cached on install
 const APP_SHELL = [
@@ -96,26 +96,23 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // ── App shell → Cache-First (instant, offline-ready) ──
-  event.respondWith(cacheFirstShell(event.request));
+  // ── App shell → Stale-While-Revalidate ──
+  event.respondWith(staleWhileRevalidate(event.request));
 });
 
-// ─── Cache-First: App shell files ───
-async function cacheFirstShell(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-
-  try {
-    const response = await fetch(request);
+// ─── Stale-While-Revalidate: App shell files ───
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(CACHE_NAME);
+  const cached = await cache.match(request);
+  
+  const networkPromise = fetch(request).then(response => {
     if (response && response.status === 200) {
-      const cache = await caches.open(CACHE_NAME);
       cache.put(request, response.clone());
     }
     return response;
-  } catch {
-    // Return offline page if we have it
-    return caches.match('./index.html');
-  }
+  }).catch(err => console.warn('[SW] Shell fetch failed:', err));
+
+  return cached || networkPromise;
 }
 
 // ─── Network-First: API calls ───
