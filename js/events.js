@@ -240,6 +240,108 @@ export function bindEvents() {
             if (locMenu) locMenu.style.display = 'none';
         }
     });
+
+    // ─── BOTTOM NAV: Tab Switching ───
+    const tabSections = ['tasbeehTab', 'duaTab', 'qiblaTab', 'profileTab'];
+    const navItems = document.querySelectorAll('.bottom-nav-item');
+    const homeContent = document.querySelectorAll('.app-container > section, .app-container > .info-bar, .app-container > .app-header');
+
+    function switchTab(tabId) {
+        // Hide all tab sections
+        tabSections.forEach(id => {
+            const el = $(id);
+            if (el) el.classList.remove('active');
+        });
+        // Deactivate all nav items
+        navItems.forEach(btn => btn.classList.remove('active'));
+
+        if (tabId) {
+            // Show selected tab
+            const tab = $(tabId);
+            if (tab) tab.classList.add('active');
+            // Activate nav button
+            const navBtn = document.querySelector(`[data-tab="${tabId}"]`);
+            if (navBtn) navBtn.classList.add('active');
+            // Hide home content
+            homeContent.forEach(el => { if (el && !el.closest('.tab-section')) el.style.display = 'none'; });
+        } else {
+            // Show home (prayer times)
+            homeContent.forEach(el => { if (el && !el.closest('.tab-section')) el.style.display = ''; });
+        }
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Nav button clicks
+    navItems.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            if (btn.classList.contains('active')) {
+                // Tapping active tab = go home
+                switchTab(null);
+            } else {
+                switchTab(tabId);
+            }
+        });
+    });
+
+    // ─── PROFILE PAGE: Button events ───
+
+    // Theme selector
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const theme = btn.dataset.theme;
+            if (theme === 'dark') {
+                document.body.classList.remove('light-theme');
+                localStorage.setItem('pt_theme', 'dark');
+            } else if (theme === 'light') {
+                document.body.classList.add('light-theme');
+                localStorage.setItem('pt_theme', 'light');
+            } else {
+                // Auto: use system preference
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                document.body.classList.toggle('light-theme', !prefersDark);
+                localStorage.setItem('pt_theme', 'auto');
+            }
+        });
+    });
+
+    // Load saved theme on init
+    const savedTheme = localStorage.getItem('pt_theme') || 'dark';
+    document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+    const activeThemeBtn = $(`theme${savedTheme.charAt(0).toUpperCase() + savedTheme.slice(1)}`);
+    if (activeThemeBtn) activeThemeBtn.classList.add('active');
+
+    // Profile → Language (reuse existing lang modal)
+    on('profileLangBtn', 'click', () => {
+        const langModal = $('languageModal');
+        if (langModal) { langModal.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    });
+
+    // Profile → Settings
+    on('profileSettingsBtn', 'click', openSettingsModal);
+
+    // Profile → Calendar
+    on('profileCalendarBtn', 'click', openCalendarModal);
+
+    // Profile → Refresh Data
+    on('profileUpdateBtn', 'click', () => {
+        detectLocation();
+        showToast('🔄 Refreshing prayer times...');
+    });
+
+    // Profile → Clear All Data (Logout)
+    on('profileLogoutBtn', 'click', () => {
+        if (confirm('Are you sure? This will clear ALL saved data — locations, settings, tasbeeh count, prayer tracker.')) {
+            localStorage.clear();
+            showToast('🗑️ All data cleared! Reloading...');
+            setTimeout(() => location.reload(), 1000);
+        }
+    });
+
 }
 
 // ─── City Autocomplete ───

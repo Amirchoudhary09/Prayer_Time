@@ -40,7 +40,6 @@ async function _detectInBackground() {
             state.lat = d.latitude; state.lng = d.longitude;
             state.city = d.city || 'Unknown'; state.country = d.country_name || '';
             if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-            saveCurrentLocationToHistory();
             fetchPrayerTimes(); calculateQibla();
         }
     } catch { /* IP failed */ }
@@ -55,7 +54,6 @@ async function _detectInBackground() {
             );
             state.lat = pos.coords.latitude; state.lng = pos.coords.longitude;
             await reverseGeocode(state.lat, state.lng);
-            saveCurrentLocationToHistory();
             fetchPrayerTimes(); calculateQibla();
             showToast('📍 Location updated!');
         } catch { /* GPS denied */ }
@@ -93,7 +91,6 @@ export async function switchToGPS() {
             );
             state.lat = pos.coords.latitude; state.lng = pos.coords.longitude;
             await reverseGeocode(state.lat, state.lng);
-            saveCurrentLocationToHistory();
             state.hijriCalData = null;
             await fetchPrayerTimes();
             calculateQibla();
@@ -111,7 +108,6 @@ export async function switchToGPS() {
             state.lat = d.latitude; state.lng = d.longitude;
             state.city = d.city || 'Unknown'; state.country = d.country_name || '';
             if (dom.cityName) dom.cityName.textContent = state.city + (state.country ? ', ' + state.country : '');
-            saveCurrentLocationToHistory();
             state.hijriCalData = null;
             await fetchPrayerTimes();
             calculateQibla();
