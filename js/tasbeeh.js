@@ -137,7 +137,6 @@ function renderCustomPanel() {
                 ).join('')}
             </div>
         </div>
-        <button class="setting-btn custom-start-btn" id="customStartBtn">▶ Start Counting</button>
     `;
 
     // Listeners
@@ -147,6 +146,7 @@ function renderCustomPanel() {
     dhikrInput?.addEventListener('input', () => {
         customLabel = dhikrInput.value;
         localStorage.setItem('pt_tasbeeh_custom_label', customLabel);
+        updateDisplay();
     });
 
     targetInput?.addEventListener('input', () => {
@@ -179,16 +179,7 @@ function renderCustomPanel() {
         });
     });
 
-    document.getElementById('customStartBtn')?.addEventListener('click', () => {
-        customLabel  = dhikrInput?.value?.trim() || 'Custom Dhikr';
-        customTarget = parseInt(targetInput?.value) || 33;
-        localStorage.setItem('pt_tasbeeh_custom_label',  customLabel);
-        localStorage.setItem('pt_tasbeeh_custom_target', customTarget);
-        count = 0;
-        localStorage.setItem('pt_tasbeeh_count', 0);
-        updateDisplay();
-        showToast(`📿 ${customLabel} — ${customTarget}× — Start!`);
-    });
+
 }
 
 function updateQuickTargetHighlight() {
