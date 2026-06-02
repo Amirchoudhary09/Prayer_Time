@@ -277,6 +277,10 @@ export function updatePrayerCards() {
     if ($('time-zawal')) $('time-zawal').textContent = formatTime(zawalTime);
     parsedTimes.zawal = zawalDate;
 
+    // Jummah = Dhuhr time
+    const jummahTime = state.todayTimings.Dhuhr.split(' ')[0];
+    if ($('time-jummah')) $('time-jummah').textContent = formatTime(jummahTime);
+
     // Imsak & Tahajjud parsed times for notifications
     const imsakDefault    = state.todayTimings.Imsak || state.todayTimings.Fajr;
     const tahajjudDefault = state.todayTimings.Lastthird || '02:00';
