@@ -12,6 +12,10 @@ import { startCountdown } from './notifications.js';
 import { initTasbeeh } from './tasbeeh.js';
 import { initTracker, updateTrackerUI } from './tracker.js';
 import { initDuas } from './duas.js';
+import { initZakat } from './zakat.js';
+import { initNames } from './names.js';
+import { initQuran } from './quran.js';
+import { initMap } from './map.js';
 import { state } from './state.js';
 
 async function init() {
@@ -88,6 +92,10 @@ async function init() {
     initTasbeeh();
     initTracker();
     initDuas();
+    initZakat();
+    initNames();
+    initQuran();
+    initMap();
 
     // 12. Jumu'ah banner (Friday check)
     initJumuahBanner();

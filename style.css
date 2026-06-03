@@ -1,4 +1,4 @@
-﻿/* ============================================
+/* ============================================
    ðŸ•Œ PRAYER TIMES APP - DESIGN SYSTEM
    Premium Islamic-themed UI
    ============================================ */
@@ -1341,8 +1341,14 @@ body {
     max-width: 480px;
     max-height: 85vh;
     overflow-y: auto;
-    transform: translateY(20px) scale(0.95);
-    transition: var(--transition);
+    /* Drop from top */
+    transform: translateY(-40px) scale(0.98);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    /* Extra transparency for modals */
+    background: rgba(20, 20, 30, 0.4) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
 }
 
 .modal-overlay.active .modal {
@@ -2459,7 +2465,7 @@ body.light-theme .bottom-nav { background: rgba(255,255,255,0.95); border-top: 1
 body.light-theme .bottom-nav-item { color: var(--text-muted); }
 body.light-theme .bottom-nav-item.active { color: var(--primary); }
 body.light-theme .bottom-nav-item.active::after { background: var(--primary); }
-body.light-theme .modal.glass-card { background: rgba(255,255,255,0.95); color: #1e293b; }
+body.light-theme .modal.glass-card { background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(25px) !important; color: #1e293b; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.5) !important; }
 body.light-theme .modal-header, body.light-theme .cal-top-bar { border-bottom: 1px solid rgba(0,0,0,0.1); }
 body.light-theme .timer-value { color: var(--primary); text-shadow: none; }
 body.light-theme .arabic-subtitle { color: var(--primary); }

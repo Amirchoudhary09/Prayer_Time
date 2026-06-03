@@ -11,26 +11,78 @@ import { updatePrayerCards, showToast } from './ui.js';
 export async function fetchPrayerTimes() {
     if (!state.lat || !state.lng) return;
     try {
-        const today = new Date();
-        const dd = today.getDate(), mm = today.getMonth() + 1, yyyy = today.getFullYear();
-        const url = `${API_BASE}/timings/${dd}-${mm}-${yyyy}?latitude=${state.lat}&longitude=${state.lng}&method=${state.method}&school=${state.school}&adj=${state.hijriOffset}`;
-        const res  = await fetch(url);
-        const data = await res.json();
-
-        if (data.code === 200) {
-            state.todayTimings = data.data.timings;
-            const hijri = data.data.date.hijri;
-            state.hijriMonth = parseInt(hijri.month.number);
-            state.hijriYear  = parseInt(hijri.year);
-            dom.hijriDate.textContent = `${hijri.day} ${hijri.month.en} ${hijri.year} AH`;
-            updatePrayerCards();
-            // Notify main to start countdown (avoid circular import with notifications.js)
-            document.dispatchEvent(new CustomEvent('prayerTimesLoaded'));
-            document.querySelectorAll('.prayer-card').forEach(c => c.classList.add('fade-in'));
+        const date = new Date();
+        const coordinates = new adhan.Coordinates(state.lat, state.lng);
+        
+        let params;
+        switch (parseInt(state.method)) {
+            case 1: params = adhan.CalculationMethod.Karachi(); break;
+            case 2: params = adhan.CalculationMethod.NorthAmerica(); break;
+            case 3: params = adhan.CalculationMethod.MuslimWorldLeague(); break;
+            case 4: params = adhan.CalculationMethod.UmmAlQura(); break;
+            case 5: params = adhan.CalculationMethod.Egyptian(); break;
+            case 7: params = adhan.CalculationMethod.Tehran(); break;
+            case 8: params = adhan.CalculationMethod.Dubai(); break;
+            case 9: params = adhan.CalculationMethod.Kuwait(); break;
+            case 10: params = adhan.CalculationMethod.Qatar(); break;
+            case 11: params = adhan.CalculationMethod.Singapore(); break;
+            case 12: params = adhan.CalculationMethod.Turkey(); break;
+            case 13: params = adhan.CalculationMethod.MoonsightingCommittee(); break;
+            default: params = adhan.CalculationMethod.MuslimWorldLeague(); break;
         }
+
+        // Set Fiqh (Asr Method)
+        params.madhab = parseInt(state.school) === 1 ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+
+        const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
+        
+        // Format times to HH:mm
+        const formatTime = (d) => {
+            if (!d) return '--:--';
+            return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+        };
+
+        state.todayTimings = {
+            Fajr: formatTime(prayerTimes.fajr),
+            Sunrise: formatTime(prayerTimes.sunrise),
+            Dhuhr: formatTime(prayerTimes.dhuhr),
+            Asr: formatTime(prayerTimes.asr),
+            Sunset: formatTime(prayerTimes.maghrib), // Sunset matches Maghrib closely
+            Maghrib: formatTime(prayerTimes.maghrib),
+            Isha: formatTime(prayerTimes.isha),
+            Imsak: formatTime(new Date(prayerTimes.fajr.getTime() - 10 * 60000)), // Usually 10 mins before Fajr
+            Lastthird: formatTime(new adhan.SunnahTimes(prayerTimes).lastThirdOfTheNight)
+        };
+
+        // Calculate Hijri Date natively
+        const hijriFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+            day: 'numeric', month: 'long', year: 'numeric'
+        });
+        
+        let hijriStr = hijriFormatter.format(date);
+        
+        // The formatter usually returns something like "Rajab 15, 1447 AH"
+        dom.hijriDate.textContent = hijriStr;
+        
+        // Try parsing month and year for state
+        const parts = hijriFormatter.formatToParts(date);
+        const mPart = parts.find(p => p.type === 'month');
+        const yPart = parts.find(p => p.type === 'year');
+        
+        state.hijriMonth = 1; // Default fallback
+        if (mPart) {
+            const mNames = ['Muharram','Safar','Rabiʻ I','Rabiʻ II','Jumada I','Jumada II','Rajab','Shaʻban','Ramadan','Shawwal','Dhuʻl-Qiʻdah','Dhuʻl-Hijjah'];
+            state.hijriMonth = Math.max(1, mNames.findIndex(n => mPart.value.includes(n)) + 1);
+        }
+        state.hijriYear = yPart ? parseInt(yPart.value) : new Date().getFullYear() - 579;
+
+        updatePrayerCards();
+        document.dispatchEvent(new CustomEvent('prayerTimesLoaded'));
+        document.querySelectorAll('.prayer-card').forEach(c => c.classList.add('fade-in'));
+        
     } catch (err) {
-        console.error('Failed to fetch prayer times:', err);
-        showToast('❌ Failed to load prayer times');
+        console.error('Failed to calculate prayer times:', err);
+        showToast('❌ Failed to calculate prayer times');
     }
 }
 

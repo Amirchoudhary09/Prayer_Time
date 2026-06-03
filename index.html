@@ -12,6 +12,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
     <link rel="stylesheet" href="style.css">
     <!-- Vercel Web Analytics -->
     <script defer src="/_vercel/insights/script.js"></script>
@@ -235,6 +239,19 @@
                     <div class="sec-time-val" id="time-jummah">--:--</div>
                 </div>
             </div>
+            
+            <!-- Quick Actions (Quran, Names) -->
+            <div style="display:flex; gap: 10px; margin-top: 15px;">
+                <button class="glass-card" id="btnQuran" style="flex:1; padding: 15px; border:none; color:white; background:rgba(255,255,255,0.05); border-radius:12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px; transition: transform 0.2s;">
+                    <span style="font-size:1.8rem;">📖</span>
+                    <strong style="font-size:0.95rem;">Panch Surah</strong>
+                </button>
+                <button class="glass-card" id="btn99Names" style="flex:1; padding: 15px; border:none; color:white; background:rgba(255,255,255,0.05); border-radius:12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:5px; transition: transform 0.2s;">
+                    <span style="font-size:1.8rem;">📿</span>
+                    <strong style="font-size:0.95rem;">99 Names</strong>
+                </button>
+            </div>
+
             <!-- Daily Dua / Motivation -->
             <div class="daily-motivation" id="dailyMotivation" style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
                 <div style="font-size: 1.2rem; margin-bottom: 8px; font-family: 'Amiri', serif; color: var(--primary-glow);" id="dailyDuaAr"></div>
@@ -281,6 +298,12 @@
                     <button class="setting-btn" id="enableCompassBtn" style="margin-top: 10px; font-size: 0.75rem;" data-i18n="enableCompass">🧭 Enable Live Compass</button>
                     <p class="qibla-calibration-hint">📐 To calibrate: move your phone in a figure-8 motion</p>
                 </div>
+            </div>
+
+            <button class="setting-btn" id="toggleMapBtn" style="margin-top: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">🗺️ Show Qibla on Map</button>
+            <div id="qiblaMapContainer" class="glass-card" style="margin-top: 15px; display: none; padding: 10px;">
+                <div id="qiblaMap" style="height: 300px; width: 100%; border-radius: 12px; background: #e5e5e5; z-index: 1;"></div>
+                <p style="font-size:0.75rem; color:var(--text-muted); text-align:center; margin-top:10px;">Line points towards the Kaaba in Makkah</p>
             </div>
         </section>
 
@@ -584,6 +607,87 @@
             </div>
         </div>
 
+        <!-- Quran Modal -->
+        <div class="modal-overlay" id="quranModal">
+            <div class="modal glass-card" style="max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 20px;">
+                <div class="modal-header">
+                    <h2>Panch Surah</h2>
+                    <button class="modal-close" id="closeQuranBtn">&times;</button>
+                </div>
+                <div class="modal-body" style="flex: 1; overflow-y: auto; padding-bottom: 20px;">
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 10px;" id="surahTabs">
+                        <!-- Tabs for Surah Yaseen, Mulk, etc. -->
+                    </div>
+                    <div id="surahContent" style="font-family: 'Amiri', serif; font-size: 1.5rem; line-height: 2; text-align: right; color: var(--text-color);">
+                        <div style="text-align:center; padding: 40px; color: var(--text-muted); font-family: 'Inter', sans-serif; font-size: 1rem;">
+                            Select a Surah to read...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 99 Names Modal -->
+        <div class="modal-overlay" id="namesModal">
+            <div class="modal glass-card" style="max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; padding: 20px;">
+                <div class="modal-header">
+                    <h2>Asma-ul-Husna</h2>
+                    <button class="modal-close" id="closeNamesBtn">&times;</button>
+                </div>
+                <div class="modal-body" style="flex: 1; overflow-y: auto; padding-bottom: 20px;">
+                    <div id="namesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+                        <!-- 99 Names dynamically injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zakat Modal -->
+        <div class="modal-overlay" id="zakatModal">
+            <div class="modal glass-card">
+                <div class="modal-header">
+                    <h2>Zakat Calculator</h2>
+                    <button class="modal-close" id="closeZakatBtn">&times;</button>
+                </div>
+                <div class="modal-body" style="padding-bottom: 20px;">
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Calculate 2.5% Zakat on your eligible assets (Nisab). Enter values in your local currency.</p>
+                    <div class="setting-group">
+                        <label class="setting-label">Gold & Silver (Value)</label>
+                        <input type="number" id="zakatGold" class="setting-input" placeholder="0" min="0">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Cash (At Home & Bank)</label>
+                        <input type="number" id="zakatCash" class="setting-input" placeholder="0" min="0">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Savings & Investments</label>
+                        <input type="number" id="zakatSavings" class="setting-input" placeholder="0" min="0">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Business Inventory</label>
+                        <input type="number" id="zakatBusiness" class="setting-input" placeholder="0" min="0">
+                    </div>
+                    <div class="setting-group">
+                        <label class="setting-label">Liabilities / Debts (To Subtract)</label>
+                        <input type="number" id="zakatDebts" class="setting-input" placeholder="0" min="0" style="border-color: rgba(248, 113, 113, 0.5);">
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-top: 20px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
+                            <span>Total Eligible Wealth:</span>
+                            <strong id="zakatTotalWealth">0</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size: 1.2rem; color: var(--primary);">
+                            <strong>Total Zakat (2.5%):</strong>
+                            <strong id="zakatAmount">0</strong>
+                        </div>
+                    </div>
+                    
+                    <button class="setting-btn" id="calculateZakatBtn" style="margin-top: 20px;">Calculate Zakat</button>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Modal -->
         <div class="modal-overlay" id="settingsModal">
             <div class="modal glass-card" id="settingsModalContent">
@@ -820,6 +924,21 @@
                 </div>
             </div>
 
+            <!-- Tools -->
+            <div class="profile-group">
+                <div class="profile-group-title">Tools</div>
+                <div class="profile-card">
+                    <div class="profile-row" id="profileZakatBtn">
+                        <div class="profile-row-icon">💰</div>
+                        <div class="profile-row-text">
+                            <strong>Zakat Calculator</strong>
+                            <span>Calculate your annual Zakat</span>
+                        </div>
+                        <span class="profile-row-arrow">›</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Data -->
             <div class="profile-group">
                 <div class="profile-group-title">Data</div>
@@ -902,6 +1021,8 @@
             });
         }
     </script>
+    <!-- Offline Adhan Calculation Library -->
+    <script src="js/adhan.js"></script>
     <script type="module" src="js/main.js"></script>
 </body>
 </html>
