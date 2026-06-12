@@ -6,22 +6,27 @@
    • Other APIs (geocode, ipapi) → Network-First + Cache fallback
    ============================================================ */
 
-const CACHE_NAME   = 'prayer-times-v12';
-const API_CACHE    = 'prayer-api-v12';
-const CACHE_VERSION = 12;
+const CACHE_NAME   = 'prayer-times-v13';
+const API_CACHE    = 'prayer-api-v13';
+const CACHE_VERSION = 13;
 
 // All app shell files that must be cached on install
 const APP_SHELL = [
   './',
   './index.html',
   './style.css',
+  './manifest.json',
+  './icon.svg',
   './js/dom.js',
   './js/state.js',
   './js/constants.js',
   './js/api.js',
+  './js/location.js',
+  './js/events.js',
   './js/ui.js',
   './js/settings.js',
   './js/notifications.js',
+  './js/calendar.js',
   './js/tasbeeh.js',
   './js/tracker.js',
   './js/main.js',
@@ -31,27 +36,8 @@ const APP_SHELL = [
   './js/quran.js',
   './js/quran-data.js',
   './js/zakat.js',
-  './js/map.js'
-];
-  './index.html',
-  './style.css',
-  './manifest.json',
-  './icon.svg',
-  // ES Modules
-  './js/main.js',
-  './js/state.js',
-  './js/constants.js',
-  './js/dom.js',
-  './js/ui.js',
-  './js/api.js',
-  './js/location.js',
-  './js/events.js',
-  './js/settings.js',
-  './js/notifications.js',
-  './js/calendar.js',
-  './js/tasbeeh.js',
-  './js/tracker.js',
-  './js/duas.js',
+  './js/map.js',
+  './js/duas.js'
 ];
 
 // API domains to cache with Network-First strategy
