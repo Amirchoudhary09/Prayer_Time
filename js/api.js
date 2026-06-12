@@ -55,26 +55,41 @@ export async function fetchPrayerTimes() {
         };
 
         // Calculate Hijri Date natively
-        const hijriFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
-            day: 'numeric', month: 'long', year: 'numeric'
-        });
-        
-        let hijriStr = hijriFormatter.format(date);
+        let hijriStr = "";
+        let dateObj = date;
+        try {
+            const hijriFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            });
+            hijriStr = hijriFormatter.format(dateObj);
+            
+            // Try parsing month and year for state
+            const parts = hijriFormatter.formatToParts(dateObj);
+            const mPart = parts.find(p => p.type === 'month');
+            const yPart = parts.find(p => p.type === 'year');
+            
+            state.hijriMonth = 1; // Default fallback
+            if (mPart) {
+                const mNames = ['Muharram','Safar','Rabiʻ I','Rabiʻ II','Jumada I','Jumada II','Rajab','Shaʻban','Ramadan','Shawwal','Dhuʻl-Qiʻdah','Dhuʻl-Hijjah'];
+                state.hijriMonth = Math.max(1, mNames.findIndex(n => mPart.value.includes(n)) + 1);
+            }
+            state.hijriYear = yPart ? parseInt(yPart.value) : new Date().getFullYear() - 579;
+        } catch (e) {
+            console.warn('Umalqura calendar not supported, falling back to basic islamic:', e);
+            try {
+                const fallbackFormatter = new Intl.DateTimeFormat('en-US-u-ca-islamic', {
+                    day: 'numeric', month: 'long', year: 'numeric'
+                });
+                hijriStr = fallbackFormatter.format(dateObj);
+                state.hijriMonth = 1;
+                state.hijriYear = new Date().getFullYear() - 579;
+            } catch (e2) {
+                hijriStr = "Hijri Date";
+            }
+        }
         
         // The formatter usually returns something like "Rajab 15, 1447 AH"
         dom.hijriDate.textContent = hijriStr;
-        
-        // Try parsing month and year for state
-        const parts = hijriFormatter.formatToParts(date);
-        const mPart = parts.find(p => p.type === 'month');
-        const yPart = parts.find(p => p.type === 'year');
-        
-        state.hijriMonth = 1; // Default fallback
-        if (mPart) {
-            const mNames = ['Muharram','Safar','Rabiʻ I','Rabiʻ II','Jumada I','Jumada II','Rajab','Shaʻban','Ramadan','Shawwal','Dhuʻl-Qiʻdah','Dhuʻl-Hijjah'];
-            state.hijriMonth = Math.max(1, mNames.findIndex(n => mPart.value.includes(n)) + 1);
-        }
-        state.hijriYear = yPart ? parseInt(yPart.value) : new Date().getFullYear() - 579;
 
         updatePrayerCards();
         document.dispatchEvent(new CustomEvent('prayerTimesLoaded'));
