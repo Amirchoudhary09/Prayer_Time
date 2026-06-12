@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Loading Test</title>
+<style>body{font-family:monospace;background:#111;color:#0f0;padding:20px} .ok{color:#0f0} .err{color:#f00} .warn{color:#ff0} pre{white-space:pre-wrap}</style>
+</head>
+<body>
+<h2>🔍 Prayer Times App — Loading Diagnostic</h2>
+<div id="log"></div>
+
+<script>
+const log = document.getElementById('log');
+function ok(msg) { log.innerHTML += `<div class="ok">✅ ${msg}</div>`; }
+function err(msg) { log.innerHTML += `<div class="err">❌ ${msg}</div>`; }
+function warn(msg) { log.innerHTML += `<div class="warn">⚠️ ${msg}</div>`; }
+function info(msg) { log.innerHTML += `<div>${msg}</div>`; }
+
+// Test 1: adhan.js loads as UMD global
+info('<br><b>=== TEST 1: adhan.js (UMD global) ===</b>');
+</script>
+
+<script src="js/adhan.js"></script>
+<script>
+if (typeof adhan !== 'undefined') {
+    ok('adhan global exists');
+    if (adhan.Coordinates) ok('adhan.Coordinates exists');
+    else err('adhan.Coordinates is MISSING');
+    if (adhan.CalculationMethod) ok('adhan.CalculationMethod exists');
+    else err('adhan.CalculationMethod is MISSING');
+    if (adhan.PrayerTimes) ok('adhan.PrayerTimes exists');
+    else err('adhan.PrayerTimes is MISSING');
+    if (adhan.SunnahTimes) ok('adhan.SunnahTimes exists');
+    else err('adhan.SunnahTimes is MISSING');
+    if (adhan.Madhab) ok('adhan.Madhab exists: ' + JSON.stringify(adhan.Madhab));
+    else err('adhan.Madhab is MISSING');
+
+    // Test calculation
+    try {
+        const coords = new adhan.Coordinates(21.4225, 39.8262);
+        const params = adhan.CalculationMethod.MuslimWorldLeague();
+        params.madhab = adhan.Madhab.Hanafi;
+        const pt = new adhan.PrayerTimes(coords, new Date(), params);
+        ok('Prayer times calculated successfully!');
+        ok('Fajr: ' + pt.fajr.toLocaleTimeString());
+        ok('Dhuhr: ' + pt.dhuhr.toLocaleTimeString());
+        ok('Asr: ' + pt.asr.toLocaleTimeString());
+        ok('Maghrib: ' + pt.maghrib.toLocaleTimeString());
+        ok('Isha: ' + pt.isha.toLocaleTimeString());
+
+        const st = new adhan.SunnahTimes(pt);
+        ok('Tahajjud (Last Third): ' + st.lastThirdOfTheNight.toLocaleTimeString());
+    } catch(e) {
+        err('Prayer calculation FAILED: ' + e.message);
+        err('Stack: ' + e.stack);
+    }
+} else {
+    err('adhan global is UNDEFINED — adhan.js failed to load or has a syntax error!');
+}
+
+// Test 2: Hijri date
+info('<br><b>=== TEST 2: Intl.DateTimeFormat (Hijri) ===</b>');
+try {
+    const fmt = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' });
+    const hijri = fmt.format(new Date());
+    ok('Hijri date (umalqura): ' + hijri);
+} catch(e) {
+    warn('Umalqura not supported: ' + e.message);
+    try {
+        const fmt2 = new Intl.DateTimeFormat('en-US-u-ca-islamic', { day:'numeric', month:'long', year:'numeric' });
+        ok('Hijri date (fallback islamic): ' + fmt2.format(new Date()));
+    } catch(e2) {
+        err('No islamic calendar support at all: ' + e2.message);
+    }
+}
+</script>
+
+<!-- Test 3: ES Module imports -->
+<script type="module">
+const log = document.getElementById('log');
+function ok(msg) { log.innerHTML += `<div class="ok">✅ ${msg}</div>`; }
+function err(msg) { log.innerHTML += `<div class="err">❌ ${msg}</div>`; }
+function warn(msg) { log.innerHTML += `<div class="warn">⚠️ ${msg}</div>`; }
+function info(msg) { log.innerHTML += `<div>${msg}</div>`; }
+
+info('<br><b>=== TEST 3: ES Module Imports ===</b>');
+
+const modules = [
+    ['./js/state.js', 'state'],
+    ['./js/constants.js', 'PRAYER_NAMES'],
+    ['./js/dom.js', 'initDom'],
+    ['./js/ui.js', 'showToast'],
+    ['./js/api.js', 'fetchPrayerTimes'],
+    ['./js/location.js', 'detectLocation'],
+    ['./js/settings.js', 'loadSettings'],
+    ['./js/events.js', 'bindEvents'],
+    ['./js/notifications.js', 'startCountdown'],
+    ['./js/calendar.js', 'openCalendarModal'],
+    ['./js/tasbeeh.js', 'initTasbeeh'],
+    ['./js/tracker.js', 'initTracker'],
+    ['./js/duas.js', 'initDuas'],
+    ['./js/zakat.js', 'initZakat'],
+    ['./js/names.js', 'initNames'],
+    ['./js/names-data.js', 'NAMES_DATA'],
+    ['./js/quran.js', 'initQuran'],
+    ['./js/quran-data.js', 'QURAN_DATA'],
+    ['./js/map.js', 'initMap'],
+];
+
+for (const [path, exportName] of modules) {
+    try {
+        const mod = await import(path);
+        if (mod[exportName]) {
+            ok(`${path} → ${exportName} loaded`);
+        } else {
+            err(`${path} loaded but "${exportName}" is NOT exported. Available: ${Object.keys(mod).join(', ')}`);
+        }
+    } catch(e) {
+        err(`${path} FAILED TO LOAD: ${e.message}`);
+    }
+}
+
+// Test 4: Full init simulation
+info('<br><b>=== TEST 4: Simulate Prayer Calculation ===</b>');
+try {
+    const { state } = await import('./js/state.js');
+    state.lat = 21.4225;
+    state.lng = 39.8262;
+    state.method = 3;
+    state.school = 1;
+    
+    const { fetchPrayerTimes } = await import('./js/api.js');
+    
+    // We need DOM elements for fetchPrayerTimes, so let's test adhan directly
+    const coords = new adhan.Coordinates(state.lat, state.lng);
+    const params = adhan.CalculationMethod.MuslimWorldLeague();
+    params.madhab = parseInt(state.school) === 1 ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+    const pt = new adhan.PrayerTimes(coords, new Date(), params);
+    
+    const fmt = (d) => d ? `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}` : '--:--';
+    
+    ok('Full pipeline works! Times for Makkah:');
+    ok(`  Fajr: ${fmt(pt.fajr)}, Sunrise: ${fmt(pt.sunrise)}, Dhuhr: ${fmt(pt.dhuhr)}`);
+    ok(`  Asr: ${fmt(pt.asr)}, Maghrib: ${fmt(pt.maghrib)}, Isha: ${fmt(pt.isha)}`);
+    
+    const sunnahTimes = new adhan.SunnahTimes(pt);
+    ok(`  Tahajjud: ${fmt(sunnahTimes.lastThirdOfTheNight)}`);
+    
+} catch(e) {
+    err('Full pipeline FAILED: ' + e.message);
+    err('Stack: ' + e.stack);
+}
+
+info('<br><b>=== TEST 5: Service Worker Status ===</b>');
+if ('serviceWorker' in navigator) {
+    try {
+        const reg = await navigator.serviceWorker.getRegistration();
+        if (reg) {
+            ok('Service Worker registered');
+            if (reg.active) ok('SW active: scope=' + reg.scope);
+            if (reg.waiting) warn('SW has a WAITING worker (new version pending!)');
+            if (reg.installing) warn('SW is INSTALLING');
+        } else {
+            warn('No Service Worker registered');
+        }
+    } catch(e) {
+        warn('SW check failed: ' + e.message);
+    }
+} else {
+    warn('Service Worker not supported');
+}
+
+info('<br><b>=== DONE ===</b>');
+</script>
+</body>
+</html>
