@@ -6,13 +6,33 @@
    • Other APIs (geocode, ipapi) → Network-First + Cache fallback
    ============================================================ */
 
-const CACHE_NAME   = 'prayer-times-v6';
-const API_CACHE    = 'prayer-api-v6';
-const CACHE_VERSION = 6;
+const CACHE_NAME   = 'prayer-times-v12';
+const API_CACHE    = 'prayer-api-v12';
+const CACHE_VERSION = 12;
 
 // All app shell files that must be cached on install
 const APP_SHELL = [
   './',
+  './index.html',
+  './style.css',
+  './js/dom.js',
+  './js/state.js',
+  './js/constants.js',
+  './js/api.js',
+  './js/ui.js',
+  './js/settings.js',
+  './js/notifications.js',
+  './js/tasbeeh.js',
+  './js/tracker.js',
+  './js/main.js',
+  './js/adhan.js',
+  './js/names.js',
+  './js/names-data.js',
+  './js/quran.js',
+  './js/quran-data.js',
+  './js/zakat.js',
+  './js/map.js'
+];
   './index.html',
   './style.css',
   './manifest.json',
