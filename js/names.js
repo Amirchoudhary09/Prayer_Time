@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { $ } from './dom.js';
-import { ASMA_UL_HUSNA } from './names-data.js';
+import { NAMES_DATA } from './names-data.js';
 
 export function initNames() {
     const btn = $('btn99Names');
@@ -29,7 +29,7 @@ function renderNames() {
     if (!grid || grid.innerHTML.trim() !== '') return; // Already rendered
 
     let html = '';
-    ASMA_UL_HUSNA.forEach(item => {
+    NAMES_DATA.forEach(item => {
         html += `
             <div class="name-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; justify-content: center;">
                 <div style="font-family: 'Amiri', serif; font-size: 2rem; color: var(--primary-glow); margin-bottom: 5px;">${item.name}</div>
