@@ -121,10 +121,24 @@ async function staleWhileRevalidate(request) {
   return cached || networkPromise;
 }
 
+// Helper for fetch timeout compatible with older browsers
+async function fetchWithTimeout(request, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(request, { signal: controller.signal });
+    clearTimeout(timer);
+    return response;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
 // ─── Network-First: API calls ───
 async function networkFirstAPI(request) {
   try {
-    const response = await fetch(request.clone(), { signal: AbortSignal.timeout(8000) });
+    const response = await fetchWithTimeout(request.clone(), 8000);
 
     // Cache successful API responses (including CORS/opaque)
     if (response && (response.status === 200 || response.type === 'opaque')) {

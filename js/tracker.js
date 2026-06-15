@@ -12,9 +12,19 @@ function todayKey() {
     return `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
 }
 
+function safeGetTracker() {
+    try {
+        const val = localStorage.getItem('pt_tracker');
+        if (val) return JSON.parse(val);
+    } catch (e) {
+        console.warn('[tracker.js] Failed to parse pt_tracker:', e);
+    }
+    return {};
+}
+
 // Load today's tracking state
 function loadToday() {
-    const saved = JSON.parse(localStorage.getItem('pt_tracker') || '{}');
+    const saved = safeGetTracker();
     const key = todayKey();
     if (!saved[key]) saved[key] = {};
     return { saved, key };
@@ -113,7 +123,7 @@ function updateTrackerSummary() {
 
 // Streak calculation
 export function getPrayerStreak() {
-    const saved = JSON.parse(localStorage.getItem('pt_tracker') || '{}');
+    const saved = safeGetTracker();
     const mainPrayers = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
     let streak = 0;
     const today = new Date();

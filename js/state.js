@@ -2,6 +2,16 @@
    🗂️ state.js — Single source of truth for all app state
    ============================================================ */
 
+function safeJsonParse(key, defaultJsonStr) {
+    try {
+        const val = localStorage.getItem(key);
+        if (val) return JSON.parse(val);
+    } catch (e) {
+        console.warn(`[state.js] Failed to parse localStorage key "${key}":`, e);
+    }
+    return JSON.parse(defaultJsonStr);
+}
+
 export const state = {
     lat: null,
     lng: null,
@@ -28,23 +38,23 @@ export const state = {
     isCompassActive: false,
 
     // Notifications
-    notifyPrefs: JSON.parse(
-        localStorage.getItem('pt_notify_prefs') ||
+    notifyPrefs: safeJsonParse(
+        'pt_notify_prefs',
         '{"imsak":false,"fajr":true,"sunrise":false,"ishraq":false,"zawal":false,"dhuhr":true,"asr":true,"maghrib":true,"isha":true,"tahajjud":false}'
     ),
     notifySound:      localStorage.getItem('pt_notify_sound') || 'system',
     notifiedPrayers: {},
 
     // Jamaat Times
-    jamaatTimes: JSON.parse(
-        localStorage.getItem('pt_jamaat_times') ||
+    jamaatTimes: safeJsonParse(
+        'pt_jamaat_times',
         '{"imsak":"","fajr":"","sunrise":"","ishraq":"","zawal":"","dhuhr":"","asr":"","maghrib":"","isha":"","tahajjud":""}'
     ),
 
     // UI / Preferences
     themeMode:  localStorage.getItem('pt_theme') || 'auto',
     appLang:    localStorage.getItem('pt_lang')  || 'en',
-    savedLocations: JSON.parse(localStorage.getItem('pt_locations') || '[]'),
+    savedLocations: safeJsonParse('pt_locations', '[]'),
     longPressTimer:  null,
     hijriOffset:     parseInt(localStorage.getItem('pt_hijri_adj')       || '0'),
     ishraqOffset:    parseInt(localStorage.getItem('pt_ishraq_offset')   || '15'),

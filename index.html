@@ -26,37 +26,45 @@
         // If user's browser has old cached service worker, this nukes it automatically
         (function() {
             var CACHE_NUKE_KEY = 'pt_cache_v14';
-            if (!localStorage.getItem(CACHE_NUKE_KEY)) {
-                localStorage.setItem(CACHE_NUKE_KEY, '1');
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(function(regs) {
-                        for (var i = 0; i < regs.length; i++) regs[i].unregister();
-                    });
+            try {
+                if (!localStorage.getItem(CACHE_NUKE_KEY)) {
+                    localStorage.setItem(CACHE_NUKE_KEY, '1');
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(function(regs) {
+                            for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                        });
+                    }
+                    if ('caches' in window) {
+                        caches.keys().then(function(keys) {
+                            return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+                        }).then(function() {
+                            window.location.reload();
+                        });
+                    } else {
+                        window.location.reload();
+                    }
+                    return; // Stop execution, page will reload
                 }
-                if ('caches' in window) {
+            } catch (e) {
+                console.warn('Cache nuke failed due to localStorage restrictions:', e);
+            }
+            // Also support manual ?clear=1
+            try {
+                if (window.location.search.includes('clear=1')) {
+                    localStorage.removeItem(CACHE_NUKE_KEY); // Allow re-nuke
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.getRegistrations().then(function(regs) {
+                            for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                        });
+                    }
                     caches.keys().then(function(keys) {
                         return Promise.all(keys.map(function(k) { return caches.delete(k); }));
                     }).then(function() {
-                        window.location.reload();
-                    });
-                } else {
-                    window.location.reload();
-                }
-                return; // Stop execution, page will reload
-            }
-            // Also support manual ?clear=1
-            if (window.location.search.includes('clear=1')) {
-                localStorage.removeItem(CACHE_NUKE_KEY); // Allow re-nuke
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.getRegistrations().then(function(regs) {
-                        for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                        window.location.href = window.location.pathname;
                     });
                 }
-                caches.keys().then(function(keys) {
-                    return Promise.all(keys.map(function(k) { return caches.delete(k); }));
-                }).then(function() {
-                    window.location.href = window.location.pathname;
-                });
+            } catch (e) {
+                console.warn('Manual clear failed:', e);
             }
         })();
     </script>
@@ -1047,6 +1055,8 @@
             });
         }
     </script>
+    <!-- Leaflet JS for Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <!-- Offline Adhan Calculation Library -->
     <script src="js/adhan.js"></script>
     <script type="module" src="js/main.js"></script>
