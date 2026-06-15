@@ -22,17 +22,43 @@
 </head>
 <body>
     <script>
-        if (window.location.search.includes('clear=1')) {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(regs => {
-                    for (let reg of regs) reg.unregister();
-                });
+        // === ONE-TIME CACHE NUKE (v14) ===
+        // If user's browser has old cached service worker, this nukes it automatically
+        (function() {
+            var CACHE_NUKE_KEY = 'pt_cache_v14';
+            if (!localStorage.getItem(CACHE_NUKE_KEY)) {
+                localStorage.setItem(CACHE_NUKE_KEY, '1');
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                    });
+                }
+                if ('caches' in window) {
+                    caches.keys().then(function(keys) {
+                        return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+                    }).then(function() {
+                        window.location.reload();
+                    });
+                } else {
+                    window.location.reload();
+                }
+                return; // Stop execution, page will reload
             }
-            caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
-                .then(() => {
+            // Also support manual ?clear=1
+            if (window.location.search.includes('clear=1')) {
+                localStorage.removeItem(CACHE_NUKE_KEY); // Allow re-nuke
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.getRegistrations().then(function(regs) {
+                        for (var i = 0; i < regs.length; i++) regs[i].unregister();
+                    });
+                }
+                caches.keys().then(function(keys) {
+                    return Promise.all(keys.map(function(k) { return caches.delete(k); }));
+                }).then(function() {
                     window.location.href = window.location.pathname;
                 });
-        }
+            }
+        })();
     </script>
     <!-- Animated Background -->
     <div class="bg-gradient" id="bgGradient"></div>

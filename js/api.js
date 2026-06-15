@@ -89,7 +89,7 @@ export async function fetchPrayerTimes() {
         }
         
         // The formatter usually returns something like "Rajab 15, 1447 AH"
-        dom.hijriDate.textContent = hijriStr;
+        if (dom.hijriDate) dom.hijriDate.textContent = hijriStr;
 
         updatePrayerCards();
         document.dispatchEvent(new CustomEvent('prayerTimesLoaded'));
