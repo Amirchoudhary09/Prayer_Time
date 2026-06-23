@@ -47,10 +47,10 @@
             document.body.appendChild(div);
         });
 
-        // === ONE-TIME CACHE NUKE (v16) ===
+        // === ONE-TIME CACHE NUKE (v17) ===
         // If user's browser has old cached service worker, this nukes it automatically
         (function() {
-            var CACHE_NUKE_KEY = 'pt_cache_v16';
+            var CACHE_NUKE_KEY = 'pt_cache_v17';
             try {
                 if (!localStorage.getItem(CACHE_NUKE_KEY)) {
                     localStorage.setItem(CACHE_NUKE_KEY, '1');
