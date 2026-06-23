@@ -22,10 +22,35 @@
 </head>
 <body>
     <script>
-        // === ONE-TIME CACHE NUKE (v15) ===
+        // === GLOBAL ERROR BOUNDARY ===
+        window.onerror = function(message, source, lineno, colno, error) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed'; div.style.top = '0'; div.style.left = '0'; div.style.width = '100%';
+            div.style.background = 'red'; div.style.color = 'white'; div.style.padding = '20px';
+            div.style.zIndex = '999999'; div.style.fontFamily = 'monospace'; div.style.whiteSpace = 'pre-wrap';
+            div.innerHTML = '<h3>🚨 Fatal JavaScript Error</h3>' +
+                            '<b>Message:</b> ' + message + '<br>' +
+                            '<b>Source:</b> ' + source + '<br>' +
+                            '<b>Line:</b> ' + lineno + ':' + colno + '<br>' +
+                            '<b>Stack:</b> ' + (error ? error.stack : 'N/A');
+            document.body.appendChild(div);
+            return false;
+        };
+        window.addEventListener('unhandledrejection', function(event) {
+            var div = document.createElement('div');
+            div.style.position = 'fixed'; div.style.top = '0'; div.style.left = '0'; div.style.width = '100%';
+            div.style.background = 'darkred'; div.style.color = 'white'; div.style.padding = '20px';
+            div.style.zIndex = '999999'; div.style.fontFamily = 'monospace'; div.style.whiteSpace = 'pre-wrap';
+            div.innerHTML = '<h3>🚨 Unhandled Promise Rejection</h3>' +
+                            '<b>Reason:</b> ' + event.reason + '<br>' +
+                            '<b>Stack:</b> ' + (event.reason && event.reason.stack ? event.reason.stack : 'N/A');
+            document.body.appendChild(div);
+        });
+
+        // === ONE-TIME CACHE NUKE (v16) ===
         // If user's browser has old cached service worker, this nukes it automatically
         (function() {
-            var CACHE_NUKE_KEY = 'pt_cache_v15';
+            var CACHE_NUKE_KEY = 'pt_cache_v16';
             try {
                 if (!localStorage.getItem(CACHE_NUKE_KEY)) {
                     localStorage.setItem(CACHE_NUKE_KEY, '1');

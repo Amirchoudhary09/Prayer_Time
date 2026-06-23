@@ -24,7 +24,8 @@ $mimeTypes = @{
 }
 
 try {
-    while ($listener.IsListening) {
+while ($listener.IsListening) {
+    try {
         $context = $listener.GetContext()
         $request = $context.Request
         $response = $context.Response
@@ -51,7 +52,13 @@ try {
         }
 
         $response.OutputStream.Close()
+    } catch {
+        Write-Host "  [ERR] Connection error: $_" -ForegroundColor Yellow
+        if ($null -ne $response) {
+            try { $response.Close() } catch {}
+        }
     }
+}
 } finally {
     $listener.Stop()
     Write-Host "Server stopped." -ForegroundColor Yellow
